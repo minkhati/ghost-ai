@@ -375,29 +375,48 @@ is hard to read, hard to extend, and hard to hand off.
 
 ```
 Based on our conversation about my project, help me write
-a project-overview.md file.
+a code-standards.md file.
 It should include:
 
-- A one paragraph overview of what the application does
-- A numbered list of goals
-- A step-by-step core user flow from start to finish
-- A features section broken down by category
-- An in-scope section listing what we are building
-- An out-of-scope section listing what we are not building
-- A success criteria section defining what done looks like
+- General engineering practices: small single-purpose modules,
+  fix root causes not symptoms, no mixed concerns
+- TypeScript conventions: strict mode required, avoid `any`,
+  use explicit interfaces for object contracts, validate
+  unknown external input at system boundaries
+- Next.js/framework patterns: default to React Server
+  Components, add "use client" only for browser interactivity
+  or hooks, keep route handlers single-responsibility, push
+  long-running work to background tasks
+- Styling rules: use CSS custom property tokens defined in
+  globals.css, reference them through Tailwind utility names,
+  never use raw color classes or hardcoded hex values, maintain
+  the border-radius scale (rounded-xl / rounded-2xl / rounded-3xl)
+- API route structure: validate and parse request input first,
+  enforce auth and ownership checks before any mutation,
+  return consistent response shapes, keep handlers thin
+- Data and storage boundaries: relational metadata in
+  PostgreSQL via Prisma, large artifacts in Vercel Blob with
+  only the URL stored in the database, no large content
+  directly in the database
+- File organization conventions: lib/ for shared
+  infrastructure, trigger/ for background tasks, components/
+  for UI only, app/api/ for route handlers, name files after
+  their responsibility not the technology
 
-My project: [paste your idea and key decisions from your
+My stack and architectural decisions: [paste your stack,
+storage model, and key architectural choices from your
 planning conversation]
 Write it in plain Markdown. Be specific and concrete.
-Avoid vague language.
+Use imperative language.
 ```
 
 **What good output looks like**
 
-Goals are measurable, not aspirational. The user flow is
-step-by-step with no gaps. The out-of-scope list is explicit
-and detailed. Success criteria are verifiable — not "looks good"
-but "a signed-in user can create and open a project."
+Rules are actionable, not aspirational. Each section names
+specific patterns to follow and anti-patterns to avoid.
+A developer reading it knows exactly what to do without
+needing to ask — "avoid `any`" is concrete, "write good
+TypeScript" is not.
 
 ---
 

@@ -20,7 +20,7 @@ Also install `lucide-react`.
 
 create `lib/utils.ts` with a reusable `cn()` helper for merging Tailwind classes.
 
-Ensure all components match the exisiting dark theme in `globals.css`.
+Ensure all components match the existing dark theme in `globals.css`.
 
 ### Check when done
 

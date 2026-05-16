@@ -5,7 +5,7 @@ or making any architectural decision:
 
 1. `context/project-overview.md` — product definition,
    goals, features, and scope
-2. `context/architecture.md` — system structure,
+2. `context/architecture-context.md` — system structure,
    boundaries, storage model, and invariants
 3. `context/ui-context.md` — theme, colors, typography,
    and component conventions

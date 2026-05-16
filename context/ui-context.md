@@ -91,7 +91,7 @@ React Flow `<Background>` component. Canvas sits on the base background color.
 
 ## Component Library
 
-shadcn/ui on top of Tailwind. No custom design system. Components live in `components/ui/`. Use the `shadcn` CLI to add new components rather than writing them from scratch.
+shadcn/ui provides the component base, layered on top of Tailwind and used together with the project's custom design token system. Components live in `components/ui/`. Use the `shadcn` CLI to add new components rather than writing them from scratch. Always style components using the project's CSS custom property tokens — not shadcn defaults or raw Tailwind color classes.
 
 ## Layout Patterns
 

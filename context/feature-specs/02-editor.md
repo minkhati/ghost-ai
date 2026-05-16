@@ -6,7 +6,7 @@ Create `components/editor/editor-navbar.tsx`.
 
 Requirements:
 
-- fiexed-height top navbar
+- fixed-height top navbar
 - left, center, and right sections
 - left section contains sidebar toggle button
 - use `PanelLeftOpen` / `PanelLeftClose` icons based on sidebar state
@@ -32,7 +32,7 @@ Requirements:
 
 ### Dialog Pattern
 
-Use the existing color tokens from `globals.css` for doalog styling.
+Use the existing color tokens from `globals.css` for dialog styling.
 
 Support:
 

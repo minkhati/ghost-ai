@@ -9,9 +9,15 @@ change.
 
 ## Current Goal
 
-- Feature 04 — Project Dialogs (feature-specs/04-project-dialogs.md) ✓ Complete
+- Feature 05 — Prisma (feature-specs/05-prisma.md) ✓ Complete
 
 ## Completed
+
+- **Feature 05 — Prisma** (feature-specs/05-prisma.md)
+  - `prisma/models/project.prisma` — `Project` model (ownerId, name, description?, status enum DRAFT/ARCHIVED, canvasJsonPath?, timestamps, indexes on ownerId and createdAt) and `ProjectCollaborator` model (project relation w/ cascade delete, email, createdAt, unique on projectId/email, indexes on email and projectId/createdAt)
+  - `lib/prisma.ts` — cached singleton; branches on `DATABASE_URL`: `prisma+postgres://` → Accelerate via `withAccelerate()`; otherwise direct `PrismaPg` adapter; cached on `global` in dev
+  - `prisma/migrations/20260517211606_init/migration.sql` — initial migration applied to database
+  - `app/generated/prisma/` — generated Prisma client output
 
 - **Feature 04 — Project Dialogs** (feature-specs/04-project-dialogs.md)
   - `hooks/use-project-dialogs.ts` — manages dialog state, form state, mock project list; exposes `openCreate`, `openRename`, `openDelete`, `closeDialog`, `handleCreate`, `handleRename`, `handleDelete`
@@ -57,7 +63,7 @@ change.
 
 ## Next Up
 
-- Feature 05 (check context/feature-specs/ for the next spec file)
+- Feature 06 (check context/feature-specs/ for the next spec file)
 
 ## Open Questions
 

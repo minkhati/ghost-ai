@@ -9,9 +9,17 @@ change.
 
 ## Current Goal
 
-- Feature 03 — Authentication (feature-specs/03-auth.md) ✓ Complete
+- Feature 04 — Project Dialogs (feature-specs/04-project-dialogs.md) ✓ Complete
 
 ## Completed
+
+- **Feature 04 — Project Dialogs** (feature-specs/04-project-dialogs.md)
+  - `hooks/use-project-dialogs.ts` — manages dialog state, form state, mock project list; exposes `openCreate`, `openRename`, `openDelete`, `closeDialog`, `handleCreate`, `handleRename`, `handleDelete`
+  - `components/editor/create-project-dialog.tsx` — name input, live slug preview
+  - `components/editor/rename-project-dialog.tsx` — prefilled input, current name in description, Enter submits
+  - `components/editor/delete-project-dialog.tsx` — destructive confirmation, no input
+  - `components/editor/project-sidebar.tsx` — project items with rename/delete actions (owned only), mobile backdrop scrim, wired `onNewProject` footer button
+  - `app/editor/page.tsx` — editor home content (heading, description, New Project button), all dialogs wired
 
 - **Feature 03 — Authentication** (feature-specs/03-auth.md)
   - `@clerk/ui` installed for dark theme support
@@ -49,7 +57,7 @@ change.
 
 ## Next Up
 
-- Feature 04 (check context/feature-specs/ for the next spec file)
+- Feature 05 (check context/feature-specs/ for the next spec file)
 
 ## Open Questions
 

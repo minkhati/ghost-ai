@@ -110,7 +110,7 @@ For other platforms:
 
 ## Decision Tree
 
-```
+```text
 User Request: "Add Clerk" / "Add authentication"
     │
     ├─ Read package.json
@@ -135,7 +135,7 @@ Read the project's `package.json` and match dependencies to the table above.
 
 Use WebFetch to retrieve the official quickstart for the detected framework:
 
-```
+```text
 WebFetch: https://clerk.com/docs/{framework}/getting-started/quickstart
 Prompt: "Extract the complete setup instructions including all code snippets, file paths, and configuration steps."
 ```
@@ -150,7 +150,7 @@ Execute each step from the quickstart guide:
 - Test the integration
 
 > **Next.js:** Create `proxy.ts` (Next.js <=15: `middleware.ts`). See the `clerk-nextjs-patterns` skill for middleware strategies.
-
+>
 > **shadcn/ui detected** (`components.json` exists): ALWAYS apply the shadcn theme. See `clerk-custom-ui` skill → shadcn Theme section.
 
 ### 4. Get API Keys
@@ -294,10 +294,10 @@ Also import the shadcn CSS in your global styles:
 |-------|----------|
 | Missing `await` on `auth()` | In Next.js 15+, `auth()` is async: `const { userId } = await auth()` |
 | Exposing `CLERK_SECRET_KEY` | Never use the secret key in client code; only `NEXT_PUBLIC_*` keys are safe |
-| Missing middleware matcher | Include API routes: `matcher: ['/((?!.*\\..*|_next).*)', '/']` |
+| Missing middleware matcher | Include API routes: `matcher: ['/((?!.*\\..*\|_next).*)', '/']` |
 | ClerkProvider placement | Must be inside `<body>` in root layout (Core 2: could wrap `<html>`) |
 | Auth routes not public | Allow `/sign-in`, `/sign-up` in middleware config |
-| Landing page requires auth | To keep "/" public, exclude it: `matcher: ['/((?!.*\\..*|_next|^/$).*)', '/api/(.*)']` |
+| Landing page requires auth | To keep "/" public, exclude it: `matcher: ['/((?!.*\\..*\|_next\|^/$).*)', '/api/(.*)']` |
 | Wrong import path | Server code uses `@clerk/nextjs/server`, client uses `@clerk/nextjs` |
 | Wrong package name | Use `@clerk/react` not `@clerk/clerk-react` (Core 2 naming) |
 

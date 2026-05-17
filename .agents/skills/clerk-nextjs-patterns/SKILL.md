@@ -226,7 +226,7 @@ if (!token) return res.status(401).json({ error: 'No token' })
 
 try {
   const claims = jwt.verify(token, publicKey, { algorithms: ['RS256'] }) as jwt.JwtPayload
-  // Manually check exp and nbf (jsonwebtoken does this automatically, but verify azp if needed)
+  // jsonwebtoken validates exp and nbf automatically; add azp check separately if needed
   // claims.sub = userId
 } catch {
   return res.status(401).json({ error: 'Invalid or expired token' })

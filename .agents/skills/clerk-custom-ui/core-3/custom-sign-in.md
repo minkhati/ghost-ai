@@ -196,7 +196,7 @@ export default function Page() {
     const password = formData.get('password') as string
 
     await signIn.password({
-      emailAddress,
+      identifier: emailAddress,
       password,
     })
 

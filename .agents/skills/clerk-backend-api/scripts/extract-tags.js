@@ -8,7 +8,7 @@ process.stdin.on("end", () => {
     if (inTags && line.length > 0 && line[0] !== " ") break;
     if (inTags) {
       const m = line.match(/^\s{2}- name:\s*(.+)/);
-      if (m) console.log(m[1]);
+      if (m) console.log(m[1].trim().replace(/^['"]|['"]$/g, ''));
     }
   }
 });

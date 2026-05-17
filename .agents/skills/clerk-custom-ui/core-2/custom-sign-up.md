@@ -94,7 +94,7 @@ try {
 
 ```tsx
 'use client'
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useSignUp } from '@clerk/nextjs'
 import { isClerkAPIResponseError } from '@clerk/nextjs/errors'
 import { useRouter } from 'next/navigation'
@@ -111,7 +111,7 @@ export default function SignUpPage() {
 
   if (!isLoaded) return <div>Loading...</div>
 
-  async function handleRegister(e: React.FormEvent) {
+  async function handleRegister(e: FormEvent) {
     e.preventDefault()
     setError('')
 
@@ -126,7 +126,7 @@ export default function SignUpPage() {
     }
   }
 
-  async function handleVerify(e: React.FormEvent) {
+  async function handleVerify(e: FormEvent) {
     e.preventDefault()
     setError('')
 

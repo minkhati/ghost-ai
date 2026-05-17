@@ -17,9 +17,19 @@ _dir="$PWD"
 while true; do
   for _envfile in "$_dir/.env" "$_dir/.env.local"; do
     if [[ -f "$_envfile" ]]; then
-      set -a
-      source "$_envfile"
-      set +a
+      while IFS= read -r _line || [[ -n "$_line" ]]; do
+        # Skip comments and blank lines
+        [[ "$_line" =~ ^[[:space:]]*(#|$) ]] && continue
+        _key="${_line%%=*}"
+        _val="${_line#*=}"
+        # Only export valid shell identifiers
+        [[ "$_key" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]] || continue
+        # Strip optional surrounding single or double quotes from value
+        if [[ "$_val" =~ ^\"(.*)\"$ ]] || [[ "$_val" =~ ^\'(.*)\'$ ]]; then
+          _val="${BASH_REMATCH[1]}"
+        fi
+        export "$_key=$_val"
+      done < "$_envfile"
     fi
   done
   [[ -n "${CLERK_SECRET_KEY:-}" ]] && break
@@ -49,14 +59,15 @@ if [[ "$ADMIN" == false ]]; then
     GET)
       ;; # always allowed
     POST|PUT|PATCH)
-      if [[ "$SCOPES" != *"write"* ]]; then
+      if ! [[ "$SCOPES" =~ (^|[[:space:],])write($|[[:space:],]) ]]; then
         echo "ERROR: $METHOD_UPPER requests require CLERK_BAPI_SCOPES=\"write\" or --admin flag." >&2
         echo "Current CLERK_BAPI_SCOPES: \"$SCOPES\"" >&2
         exit 1
       fi
       ;;
     DELETE)
-      if [[ "$SCOPES" != *"write"* ]] || [[ "$SCOPES" != *"delete"* ]]; then
+      if ! ([[ "$SCOPES" =~ (^|[[:space:],])write($|[[:space:],]) ]] && \
+            [[ "$SCOPES" =~ (^|[[:space:],])delete($|[[:space:],]) ]]); then
         echo "ERROR: DELETE requests require CLERK_BAPI_SCOPES=\"write,delete\" or --admin flag." >&2
         echo "Current CLERK_BAPI_SCOPES: \"$SCOPES\"" >&2
         exit 1

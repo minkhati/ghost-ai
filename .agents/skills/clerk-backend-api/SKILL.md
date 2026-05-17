@@ -16,9 +16,9 @@ Before ANY POST / PATCH / PUT / DELETE, you MUST do ALL of the following in your
 
 1. **Check CLERK_SECRET_KEY** — verify it is set:
    ```bash
-   echo $CLERK_SECRET_KEY | head -c 10
+   [[ -n "${CLERK_SECRET_KEY:-}" ]] && echo "CLERK_SECRET_KEY is set" || echo "ERROR: CLERK_SECRET_KEY is not set"
    ```
-   If empty, stop and ask the user. Do not proceed without a valid key.
+   If not set, stop and ask the user. Do not proceed without a valid key.
 
 2. **Check CLERK_BAPI_SCOPES** — run:
    ```bash
@@ -152,26 +152,26 @@ Auth: `Authorization: Bearer $CLERK_SECRET_KEY` on every request.
 ### Users
 
 **List users**
-```
+```http
 GET /v1/users
 Query params: limit (max 500, default 10), offset, order_by (+/-created_at, +/-updated_at, +/-email_address, +/-web3wallet, +/-first_name, +/-last_name, +/-phone_number, +/-username, +/-last_active_at, +/-last_sign_in_at), email_address[], phone_number[], username[], web3wallet[], user_id[], query, created_at (ISO 8601 range: gt:TIMESTAMP or lt:TIMESTAMP in Unix ms)
 Returns: array of User objects
 ```
 
 **Get user**
-```
+```http
 GET /v1/users/{user_id}
 Returns: User object
 ```
 
 **Update user**
-```
+```http
 PATCH /v1/users/{user_id}
 Body (JSON, snake_case): { public_metadata, private_metadata, unsafe_metadata, first_name, last_name, username, ... }
 ```
 
 **Delete user — IRREVERSIBLE**
-```
+```http
 DELETE /v1/users/{user_id}
 Destroys: user record, all sessions, all memberships, all associated data
 Returns: { id, object, deleted: true }
@@ -181,20 +181,20 @@ Always warn the user this is permanent and confirm before proceeding.
 ### Organizations
 
 **Create organization**
-```
+```http
 POST /v1/organizations
 Body: { name: string, created_by: string (user_id), public_metadata?, private_metadata?, max_allowed_memberships? }
 Returns: Organization object with { id, name, slug, ... }
 ```
 
 **List organizations**
-```
+```http
 GET /v1/organizations
 Query params: limit, offset, query, order_by
 ```
 
 **Invite member**
-```
+```http
 POST /v1/organizations/{organization_id}/invitations
 Body: { email_address: string, role: string ("org:admin" or "org:member"), public_metadata?, private_metadata? }
 Returns: OrganizationInvitation object
@@ -320,7 +320,7 @@ Determine the active mode, then follow the applicable steps below.
 
 Print the following examples to the user verbatim:
 
-```
+```text
 Browse
   /clerk-backend-api tags                         — list all tags
   /clerk-backend-api Users                        — browse endpoints for the Users tag

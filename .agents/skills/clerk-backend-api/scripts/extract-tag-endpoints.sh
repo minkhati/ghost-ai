@@ -31,7 +31,7 @@ const tagLower = tag.toLowerCase();
 // Phase 1: Find all path definitions and their method blocks
 // Paths start at indent 2 with "  /"
 // Methods start at indent 4 with "    get:", "    post:", etc.
-const methods = ["get", "post", "put", "patch", "delete", "options", "head"];
+const methods = ["get", "post", "put", "patch", "delete", "options", "head", "trace"];
 const endpoints = [];
 const refs = new Set();
 

@@ -25,7 +25,7 @@ change.
   - `components/editor/editor-navbar.tsx` — `UserButton` added to right section
 
 - **Feature 02 — Editor chrome** (feature-specs/02-editor.md)
-  - `components/editor/editor-navbar.tsx` — fixed `h-12` top navbar (`z-40`), left sidebar toggle with `PanelLeftOpen`/`PanelLeftClose`, empty right section
+  - `components/editor/editor-navbar.tsx` — fixed `h-12` top navbar (`z-40`), left sidebar toggle with `PanelLeftOpen`/`PanelLeftClose`, right section contains `UserButton` (added in Feature 03)
   - `components/editor/project-sidebar.tsx` — fixed overlay (`z-30`), slides in from left, `isOpen` prop, Projects header + X close, shadcn Tabs (My Projects / Shared) with empty states, full-width New Project button
   - Dialog pattern: satisfied by existing `components/ui/dialog.tsx` (shadcn); no new dialog built
 - **Feature 01 — Design system** (feature-specs/01-design-system.md)

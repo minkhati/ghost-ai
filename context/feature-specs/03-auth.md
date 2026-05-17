@@ -4,7 +4,7 @@ Clerk is already installed and connected. wire it into the Next.js app: Provider
 
 Use Clerk's `dark` theme from `@clerk/ui/themes` as the base.
 
-Override Clerk appearance variables using the app's exisiting CSS variables. Do not hardcode colors.
+Override Clerk appearance variables using the app's existing CSS variables. Do not hardcode colors.
 
 ### Sign-in and Sign-up pages:
 
@@ -28,6 +28,7 @@ Create Sign-in and Sign-up pages using Clerk components.
 Use `proxy.ts` at the project root, not `middleware.ts`.
 
 Define public routes using the existing Sign-in and Sign-up env vars. Protect everything else by default.
+
 
 Update `/`:
 

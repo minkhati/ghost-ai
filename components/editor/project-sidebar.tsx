@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Pencil, Plus, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -65,6 +66,20 @@ export function ProjectSidebar({
   const ownedProjects = projects.filter((p) => p.owned);
   const sharedProjects = projects.filter((p) => !p.owned);
 
+  const initialTab =
+    activeProjectId && sharedProjects.some((p) => p.id === activeProjectId)
+      ? "shared"
+      : "my-projects";
+
+  const [selectedTab, setSelectedTab] = useState(initialTab);
+
+  useEffect(() => {
+    if (!activeProjectId) return;
+    setSelectedTab(
+      sharedProjects.some((p) => p.id === activeProjectId) ? "shared" : "my-projects"
+    );
+  }, [activeProjectId, sharedProjects]);
+
   return (
     <>
       {isOpen && (
@@ -100,7 +115,7 @@ export function ProjectSidebar({
         </div>
 
         <div className="flex flex-col flex-1 overflow-hidden p-3">
-          <Tabs defaultValue="my-projects" className="flex flex-col flex-1">
+          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="flex flex-col flex-1">
             <TabsList className="w-full shrink-0">
               <TabsTrigger value="my-projects" className="flex-1">
                 My Projects

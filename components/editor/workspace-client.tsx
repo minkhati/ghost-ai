@@ -42,7 +42,6 @@ export function WorkspaceClient({ project, ownedProjects, sharedProjects }: Work
         isSidebarOpen={isSidebarOpen}
         onSidebarToggle={() => setIsSidebarOpen((prev) => !prev)}
         title={project.name}
-        onShare={() => {}}
         isAiOpen={isAiOpen}
         onAiToggle={() => setIsAiOpen((prev) => !prev)}
       />

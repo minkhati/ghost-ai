@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Pencil, Plus, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,6 +10,7 @@ interface ProjectSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   projects: Project[];
+  activeProjectId?: string;
   onNewProject: () => void;
   onRenameProject: (project: Project) => void;
   onDeleteProject: (project: Project) => void;
@@ -16,14 +18,15 @@ interface ProjectSidebarProps {
 
 interface ProjectItemProps {
   project: Project;
+  isActive?: boolean;
   showActions: boolean;
   onRename: (project: Project) => void;
   onDelete: (project: Project) => void;
 }
 
-function ProjectItem({ project, showActions, onRename, onDelete }: ProjectItemProps) {
+function ProjectItem({ project, isActive, showActions, onRename, onDelete }: ProjectItemProps) {
   return (
-    <div className="group flex items-center gap-1 rounded-xl px-2 py-1.5 hover:bg-elevated cursor-pointer">
+    <div className={["group flex items-center gap-1 rounded-xl px-2 py-1.5 cursor-pointer", isActive ? "bg-elevated" : "hover:bg-elevated"].join(" ")}>
       <span className="flex-1 text-sm text-copy-primary truncate">{project.name}</span>
       {showActions && (
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -55,12 +58,27 @@ export function ProjectSidebar({
   isOpen,
   onClose,
   projects,
+  activeProjectId,
   onNewProject,
   onRenameProject,
   onDeleteProject,
 }: ProjectSidebarProps) {
   const ownedProjects = projects.filter((p) => p.owned);
   const sharedProjects = projects.filter((p) => !p.owned);
+
+  const initialTab =
+    activeProjectId && sharedProjects.some((p) => p.id === activeProjectId)
+      ? "shared"
+      : "my-projects";
+
+  const [selectedTab, setSelectedTab] = useState(initialTab);
+
+  useEffect(() => {
+    if (!activeProjectId) return;
+    setSelectedTab(
+      sharedProjects.some((p) => p.id === activeProjectId) ? "shared" : "my-projects"
+    );
+  }, [activeProjectId, sharedProjects]);
 
   return (
     <>
@@ -97,7 +115,7 @@ export function ProjectSidebar({
         </div>
 
         <div className="flex flex-col flex-1 overflow-hidden p-3">
-          <Tabs defaultValue="my-projects" className="flex flex-col flex-1">
+          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="flex flex-col flex-1">
             <TabsList className="w-full shrink-0">
               <TabsTrigger value="my-projects" className="flex-1">
                 My Projects
@@ -121,6 +139,7 @@ export function ProjectSidebar({
                     <ProjectItem
                       key={project.id}
                       project={project}
+                      isActive={project.id === activeProjectId}
                       showActions
                       onRename={onRenameProject}
                       onDelete={onDeleteProject}
@@ -144,6 +163,7 @@ export function ProjectSidebar({
                     <ProjectItem
                       key={project.id}
                       project={project}
+                      isActive={project.id === activeProjectId}
                       showActions={false}
                       onRename={onRenameProject}
                       onDelete={onDeleteProject}

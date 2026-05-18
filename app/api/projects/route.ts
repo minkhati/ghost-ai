@@ -27,7 +27,10 @@ export async function POST(request: Request) {
       ? body.name.trim()
       : "Untitled Project";
   const rawId = typeof body?.id === "string" ? body.id.trim() : "";
-  const customId = rawId && /^[a-z0-9-]+$/.test(rawId) ? rawId : undefined;
+  if (rawId && !/^[a-z0-9-]+$/.test(rawId)) {
+    return Response.json({ error: "Invalid id: must contain only lowercase letters, digits, and hyphens" }, { status: 400 });
+  }
+  const customId = rawId || undefined;
 
   const project = await prisma.project.create({
     data: { ...(customId ? { id: customId } : {}), ownerId: userId, name },

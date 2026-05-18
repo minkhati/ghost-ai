@@ -48,7 +48,7 @@ export function CreateProjectDialog({
             placeholder="Project name"
             value={projectName}
             onChange={(e) => onProjectNameChange(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") onSubmit(); }}
+            onKeyDown={(e) => { if (e.key === "Enter" && projectName.trim()) { e.preventDefault(); onSubmit(); } }}
             className="bg-elevated border-surface-border text-copy-primary placeholder:text-copy-faint"
           />
           {roomId && (

@@ -2,7 +2,7 @@
 
 Create REST endpoints for:
 
-- `GET /api/projetcs` , list current user's projects
+- `GET /api/projects`, list current user's projects
 - `POST /api/projects`, Create project
 - `PATCH /api/projects/[projectId]`, rename project
 - `DELETE /api/projects/[projectId]`, delete project

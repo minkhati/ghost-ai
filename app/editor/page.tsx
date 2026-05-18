@@ -9,7 +9,7 @@ export default async function EditorPage() {
   if (!userId) redirect("/sign-in");
 
   const user = await currentUser();
-  const email = user?.emailAddresses[0]?.emailAddress ?? "";
+  const email = user?.primaryEmailAddress?.emailAddress ?? "";
 
   const [rawOwned, rawShared] = await Promise.all([
     getOwnedProjects(userId),

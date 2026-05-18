@@ -9,9 +9,38 @@ change.
 
 ## Current Goal
 
-- Feature 03 — Authentication (feature-specs/03-auth.md) ✓ Complete
+- Feature 07 — Wire Editor Home (feature-specs/07-wire-editor-home.md) ✓ Complete
 
 ## Completed
+
+- **Feature 07 — Wire Editor Home** (feature-specs/07-wire-editor-home.md)
+  - `lib/projects.ts` — `getOwnedProjects(userId)` and `getSharedProjects(email)` server-side Prisma helpers
+  - `hooks/use-project-actions.ts` — replaces mock `use-project-dialogs.ts`; manages dialog state, generates `roomId` (slug + short random suffix), calls `POST /api/projects` with custom `id`, navigates to new workspace; `PATCH` rename with `router.refresh()`; `DELETE` with redirect-or-refresh based on `activeProjectId`
+  - `components/editor/editor-home-client.tsx` — client shell containing navbar, sidebar, dialogs, and main CTA; receives `ownedProjects` and `sharedProjects` as serialized props
+  - `app/editor/page.tsx` — converted to async server component; fetches owned + shared projects via Clerk `auth()`/`currentUser()` and passes serialized lists to `EditorHomeClient`
+  - `app/api/projects/route.ts` — POST now accepts optional `id` field; validated as `[a-z0-9-]+` and passed to Prisma create to keep project ID and Liveblocks room ID aligned
+  - `components/editor/create-project-dialog.tsx` — `slug` prop renamed to `roomId`; preview label updated
+  - `components/editor/rename-project-dialog.tsx`, `delete-project-dialog.tsx`, `project-sidebar.tsx` — updated `Project` import to `hooks/use-project-actions`
+  - `hooks/use-project-dialogs.ts` — deleted (fully replaced)
+
+- **Feature 06 — Project APIs** (feature-specs/06-project-apis.md)
+  - `app/api/projects/route.ts` — `GET` lists the authenticated user's projects (ordered by `createdAt` desc); `POST` creates a project (defaults name to `Untitled Project`); both return 401 if unauthenticated
+  - `app/api/projects/[projectId]/route.ts` — `PATCH` renames a project; `DELETE` removes it; both return 401 if unauthenticated and 403 if the caller is not the owner; `params` awaited per Next.js 16 convention
+  - `lib/prisma.ts` — added explicit `PrismaClient` return type annotation to `createClient()` (with `as unknown as PrismaClient` cast for the Accelerate branch) to resolve union-type signature conflict that surfaced when query methods were first called
+
+- **Feature 05 — Prisma** (feature-specs/05-prisma.md)
+  - `prisma/models/project.prisma` — `Project` model (ownerId, name, description?, status enum DRAFT/ARCHIVED, canvasJsonPath?, timestamps, indexes on ownerId and createdAt) and `ProjectCollaborator` model (project relation w/ cascade delete, email, createdAt, unique on projectId/email, indexes on email and projectId/createdAt)
+  - `lib/prisma.ts` — cached singleton; branches on `DATABASE_URL`: `prisma+postgres://` → Accelerate via `withAccelerate()`; otherwise direct `PrismaPg` adapter; cached on `global` in dev
+  - `prisma/migrations/20260517211606_init/migration.sql` — initial migration applied to database
+  - `app/generated/prisma/` — generated Prisma client output
+
+- **Feature 04 — Project Dialogs** (feature-specs/04-project-dialogs.md)
+  - `hooks/use-project-dialogs.ts` — manages dialog state, form state, mock project list; exposes `openCreate`, `openRename`, `openDelete`, `closeDialog`, `handleCreate`, `handleRename`, `handleDelete`
+  - `components/editor/create-project-dialog.tsx` — name input, live slug preview
+  - `components/editor/rename-project-dialog.tsx` — prefilled input, current name in description, Enter submits
+  - `components/editor/delete-project-dialog.tsx` — destructive confirmation, no input
+  - `components/editor/project-sidebar.tsx` — project items with rename/delete actions (owned only), mobile backdrop scrim, wired `onNewProject` footer button
+  - `app/editor/page.tsx` — editor home content (heading, description, New Project button), all dialogs wired
 
 - **Feature 03 — Authentication** (feature-specs/03-auth.md)
   - `@clerk/ui` installed for dark theme support
@@ -49,7 +78,7 @@ change.
 
 ## Next Up
 
-- Feature 04 (check context/feature-specs/ for the next spec file)
+- Feature 08 (check context/feature-specs/ for the next spec file)
 
 ## Open Questions
 

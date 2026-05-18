@@ -31,6 +31,7 @@ export default async function WorkspacePage({ params }: PageProps) {
   return (
     <WorkspaceClient
       project={{ id: project.id, name: project.name }}
+      isOwner={project.ownerId === userId}
       ownedProjects={ownedProjects}
       sharedProjects={sharedProjects}
     />

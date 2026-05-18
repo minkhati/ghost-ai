@@ -9,9 +9,15 @@ change.
 
 ## Current Goal
 
-- Feature 08 — Editor Workspace Shell (feature-specs/08-editor-workspace-shell.md) ✓ Complete
+- Feature 09 — Share Dialog (feature-specs/09-share-dialog.md) ✓ Complete
 
 ## Completed
+
+- **Feature 09 — Share Dialog** (feature-specs/09-share-dialog.md)
+  - `app/api/projects/[projectId]/collaborators/route.ts` — `GET` lists collaborators enriched with Clerk display name and avatar; `POST` invites by email (owner only, validates format, returns 409 on duplicate); `DELETE` removes by email from request body (owner only); all routes use `getCurrentIdentity()` + `getProjectWithAccess()` for auth and access
+  - `components/editor/share-dialog.tsx` — client dialog: fetches collaborators on open; owners see email invite form with error feedback, collaborator list with per-row remove buttons, and copy-link button with "Copied!" feedback; collaborators see list only; Clerk avatar/displayName rendered when available, email fallback otherwise
+  - `components/editor/workspace-client.tsx` — added `isOwner: boolean` prop, `isShareOpen` state, wired `onShare` to `EditorNavbar`, renders `ShareDialog`
+  - `app/editor/[roomId]/page.tsx` — passes `isOwner={project.ownerId === userId}` to `WorkspaceClient`
 
 - **Feature 08 — Editor Workspace Shell** (feature-specs/08-editor-workspace-shell.md)
   - `lib/project-access.ts` — `getCurrentIdentity()` returns `{ userId, email }` via Clerk; `getProjectWithAccess(roomId, userId, email)` checks owner or collaborator before returning the project
@@ -86,7 +92,7 @@ change.
 
 ## Next Up
 
-- Feature 09 (check context/feature-specs/ for the next spec file)
+- Feature 10 (check context/feature-specs/ for the next spec file)
 
 ## Open Questions
 

@@ -8,16 +8,19 @@ import { RenameProjectDialog } from "@/components/editor/rename-project-dialog";
 import { DeleteProjectDialog } from "@/components/editor/delete-project-dialog";
 import { useProjectActions } from "@/hooks/use-project-actions";
 import type { Project } from "@/hooks/use-project-actions";
+import { ShareDialog } from "@/components/editor/share-dialog";
 
 interface WorkspaceClientProps {
   project: { id: string; name: string };
+  isOwner: boolean;
   ownedProjects: Project[];
   sharedProjects: Project[];
 }
 
-export function WorkspaceClient({ project, ownedProjects, sharedProjects }: WorkspaceClientProps) {
+export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProjects }: WorkspaceClientProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const {
     activeDialog,
@@ -42,6 +45,7 @@ export function WorkspaceClient({ project, ownedProjects, sharedProjects }: Work
         isSidebarOpen={isSidebarOpen}
         onSidebarToggle={() => setIsSidebarOpen((prev) => !prev)}
         title={project.name}
+        onShare={() => setIsShareOpen(true)}
         isAiOpen={isAiOpen}
         onAiToggle={() => setIsAiOpen((prev) => !prev)}
       />
@@ -91,6 +95,13 @@ export function WorkspaceClient({ project, ownedProjects, sharedProjects }: Work
         onOpenChange={(open) => { if (!open) closeDialog(); }}
         project={selectedProject}
         onConfirm={handleDelete}
+      />
+
+      <ShareDialog
+        projectId={project.id}
+        isOwner={isOwner}
+        open={isShareOpen}
+        onOpenChange={setIsShareOpen}
       />
     </div>
   );

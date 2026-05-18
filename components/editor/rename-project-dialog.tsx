@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import type { Project } from "@/hooks/use-project-dialogs";
+import type { Project } from "@/hooks/use-project-actions";
 
 interface RenameProjectDialogProps {
   open: boolean;

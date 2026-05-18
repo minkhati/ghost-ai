@@ -6,10 +6,12 @@ const globalForPrisma = globalThis as unknown as {
   prisma: ReturnType<typeof createClient> | undefined;
 };
 
-function createClient() {
+function createClient(): PrismaClient {
   const url = process.env.DATABASE_URL ?? "";
   if (url.startsWith("prisma+postgres://")) {
-    return new PrismaClient({ accelerateUrl: url }).$extends(withAccelerate());
+    return new PrismaClient({ accelerateUrl: url }).$extends(
+      withAccelerate()
+    ) as unknown as PrismaClient;
   }
   return new PrismaClient({ adapter: new PrismaPg({ connectionString: url }) });
 }

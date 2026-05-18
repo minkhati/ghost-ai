@@ -9,9 +9,24 @@ change.
 
 ## Current Goal
 
-- Feature 05 — Prisma (feature-specs/05-prisma.md) ✓ Complete
+- Feature 07 — Wire Editor Home (feature-specs/07-wire-editor-home.md) ✓ Complete
 
 ## Completed
+
+- **Feature 07 — Wire Editor Home** (feature-specs/07-wire-editor-home.md)
+  - `lib/projects.ts` — `getOwnedProjects(userId)` and `getSharedProjects(email)` server-side Prisma helpers
+  - `hooks/use-project-actions.ts` — replaces mock `use-project-dialogs.ts`; manages dialog state, generates `roomId` (slug + short random suffix), calls `POST /api/projects` with custom `id`, navigates to new workspace; `PATCH` rename with `router.refresh()`; `DELETE` with redirect-or-refresh based on `activeProjectId`
+  - `components/editor/editor-home-client.tsx` — client shell containing navbar, sidebar, dialogs, and main CTA; receives `ownedProjects` and `sharedProjects` as serialized props
+  - `app/editor/page.tsx` — converted to async server component; fetches owned + shared projects via Clerk `auth()`/`currentUser()` and passes serialized lists to `EditorHomeClient`
+  - `app/api/projects/route.ts` — POST now accepts optional `id` field; validated as `[a-z0-9-]+` and passed to Prisma create to keep project ID and Liveblocks room ID aligned
+  - `components/editor/create-project-dialog.tsx` — `slug` prop renamed to `roomId`; preview label updated
+  - `components/editor/rename-project-dialog.tsx`, `delete-project-dialog.tsx`, `project-sidebar.tsx` — updated `Project` import to `hooks/use-project-actions`
+  - `hooks/use-project-dialogs.ts` — deleted (fully replaced)
+
+- **Feature 06 — Project APIs** (feature-specs/06-project-apis.md)
+  - `app/api/projects/route.ts` — `GET` lists the authenticated user's projects (ordered by `createdAt` desc); `POST` creates a project (defaults name to `Untitled Project`); both return 401 if unauthenticated
+  - `app/api/projects/[projectId]/route.ts` — `PATCH` renames a project; `DELETE` removes it; both return 401 if unauthenticated and 403 if the caller is not the owner; `params` awaited per Next.js 16 convention
+  - `lib/prisma.ts` — added explicit `PrismaClient` return type annotation to `createClient()` (with `as unknown as PrismaClient` cast for the Accelerate branch) to resolve union-type signature conflict that surfaced when query methods were first called
 
 - **Feature 05 — Prisma** (feature-specs/05-prisma.md)
   - `prisma/models/project.prisma` — `Project` model (ownerId, name, description?, status enum DRAFT/ARCHIVED, canvasJsonPath?, timestamps, indexes on ownerId and createdAt) and `ProjectCollaborator` model (project relation w/ cascade delete, email, createdAt, unique on projectId/email, indexes on email and projectId/createdAt)
@@ -63,7 +78,7 @@ change.
 
 ## Next Up
 
-- Feature 06 (check context/feature-specs/ for the next spec file)
+- Feature 08 (check context/feature-specs/ for the next spec file)
 
 ## Open Questions
 

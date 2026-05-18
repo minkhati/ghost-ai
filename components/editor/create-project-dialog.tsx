@@ -15,7 +15,7 @@ interface CreateProjectDialogProps {
   onOpenChange: (open: boolean) => void;
   projectName: string;
   onProjectNameChange: (name: string) => void;
-  slug: string;
+  roomId: string;
   onSubmit: () => void;
 }
 
@@ -24,7 +24,7 @@ export function CreateProjectDialog({
   onOpenChange,
   projectName,
   onProjectNameChange,
-  slug,
+  roomId,
   onSubmit,
 }: CreateProjectDialogProps) {
   return (
@@ -51,10 +51,10 @@ export function CreateProjectDialog({
             onKeyDown={(e) => { if (e.key === "Enter") onSubmit(); }}
             className="bg-elevated border-surface-border text-copy-primary placeholder:text-copy-faint"
           />
-          {slug && (
+          {roomId && (
             <p className="text-xs text-copy-muted">
-              Slug:{" "}
-              <span className="font-mono text-copy-secondary">{slug}</span>
+              Room ID:{" "}
+              <span className="font-mono text-copy-secondary">{roomId}</span>
             </p>
           )}
         </div>

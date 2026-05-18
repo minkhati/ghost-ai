@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import type { Project } from "@/hooks/use-project-dialogs";
+import type { Project } from "@/hooks/use-project-actions";
 
 interface DeleteProjectDialogProps {
   open: boolean;

@@ -36,7 +36,7 @@ export function useProjectActions({ activeProjectId }: UseProjectActionsOptions 
 
   const roomId = useMemo(() => {
     const slug = toSlug(projectName);
-    return slug ? `${slug}-${suffix}` : "";
+    return slug ? `${slug}-${suffix}` : suffix;
   }, [projectName, suffix]);
 
   const closeDialog = useCallback(() => {
@@ -77,7 +77,8 @@ export function useProjectActions({ activeProjectId }: UseProjectActionsOptions 
       const { project } = (await res.json()) as { project: { id: string } };
       closeDialog();
       router.push(`/editor/${project.id}`);
-    } catch {
+    } catch (err) {
+      console.error("Failed to create project:", err);
       setIsLoading(false);
     }
   }, [projectName, roomId, isLoading, closeDialog, router]);
@@ -94,7 +95,8 @@ export function useProjectActions({ activeProjectId }: UseProjectActionsOptions 
       if (!res.ok) throw new Error("Failed to rename project");
       closeDialog();
       router.refresh();
-    } catch {
+    } catch (err) {
+      console.error("Failed to rename project:", err);
       setIsLoading(false);
     }
   }, [projectName, selectedProject, isLoading, closeDialog, router]);
@@ -113,7 +115,8 @@ export function useProjectActions({ activeProjectId }: UseProjectActionsOptions 
       } else {
         router.refresh();
       }
-    } catch {
+    } catch (err) {
+      console.error("Failed to delete project:", err);
       setIsLoading(false);
     }
   }, [selectedProject, isLoading, activeProjectId, closeDialog, router]);

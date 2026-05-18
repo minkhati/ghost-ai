@@ -10,7 +10,7 @@ Before rendering:
 - users without project access see `AccessDenied`
 - non-existent projects also show `AccessDenied`
 
-Create `componets/editor/access-denied.tsx` with:
+Create `components/editor/access-denied.tsx` with:
 
 - centered layout
 - lock icon
@@ -21,7 +21,7 @@ Create `componets/editor/access-denied.tsx` with:
 
 Create `lib/project-access.ts` with helpers for:
 
-- getting current Cleerk identity: `userId` + primary email
+- getting current Clerk identity: `userId` + primary email
 - checking project access by owner or collaborator
 
 ## Layout

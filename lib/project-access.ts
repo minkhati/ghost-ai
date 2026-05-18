@@ -13,6 +13,7 @@ export async function getProjectWithAccess(roomId: string, userId: string, email
   const project = await prisma.project.findUnique({ where: { id: roomId } });
   if (!project) return null;
   if (project.ownerId === userId) return project;
+  if (!email) return null;
   const collab = await prisma.projectCollaborator.findFirst({
     where: { projectId: project.id, email },
   });

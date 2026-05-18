@@ -9,9 +9,17 @@ change.
 
 ## Current Goal
 
-- Feature 07 — Wire Editor Home (feature-specs/07-wire-editor-home.md) ✓ Complete
+- Feature 08 — Editor Workspace Shell (feature-specs/08-editor-workspace-shell.md) ✓ Complete
 
 ## Completed
+
+- **Feature 08 — Editor Workspace Shell** (feature-specs/08-editor-workspace-shell.md)
+  - `lib/project-access.ts` — `getCurrentIdentity()` returns `{ userId, email }` via Clerk; `getProjectWithAccess(roomId, userId, email)` checks owner or collaborator before returning the project
+  - `components/editor/access-denied.tsx` — centered layout with lock icon, short message, and link back to `/editor`
+  - `components/editor/editor-navbar.tsx` — extended with optional `title`, `onShare`, `isAiOpen`, `onAiToggle` props; workspace uses share button and `PanelRightOpen`/`PanelRightClose` AI toggle
+  - `components/editor/project-sidebar.tsx` — added optional `activeProjectId` prop; active item rendered with persistent `bg-elevated` highlight
+  - `components/editor/workspace-client.tsx` — client shell: sidebar + AI panel state, `EditorNavbar` with project name, `ProjectSidebar` with `activeProjectId`, canvas placeholder, collapsible AI sidebar placeholder; all project dialogs wired
+  - `app/editor/[roomId]/page.tsx` — async server component; unauthenticated → redirect `/sign-in`; missing or unauthorized project → `<AccessDenied />`; fetches owned + shared projects for sidebar; renders `WorkspaceClient`
 
 - **Feature 07 — Wire Editor Home** (feature-specs/07-wire-editor-home.md)
   - `lib/projects.ts` — `getOwnedProjects(userId)` and `getSharedProjects(email)` server-side Prisma helpers
@@ -78,7 +86,7 @@ change.
 
 ## Next Up
 
-- Feature 08 (check context/feature-specs/ for the next spec file)
+- Feature 09 (check context/feature-specs/ for the next spec file)
 
 ## Open Questions
 

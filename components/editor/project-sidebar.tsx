@@ -21,7 +21,7 @@ interface ProjectItemProps {
   project: Project;
   isActive?: boolean;
   showActions: boolean;
-  onSelect: (project: Project) => void;
+  onSelect: () => void;
   onRename: (project: Project) => void;
   onDelete: (project: Project) => void;
 }
@@ -29,7 +29,7 @@ interface ProjectItemProps {
 function ProjectItem({ project, isActive, showActions, onSelect, onRename, onDelete }: ProjectItemProps) {
   return (
     <div
-      onClick={() => onSelect(project)}
+      onClick={onSelect}
       className={["group flex items-center gap-1 rounded-xl px-2 py-1.5 cursor-pointer", isActive ? "bg-elevated" : "hover:bg-elevated"].join(" ")}
     >
       <span className="flex-1 text-sm text-copy-primary truncate">{project.name}</span>
@@ -68,6 +68,7 @@ export function ProjectSidebar({
   onRenameProject,
   onDeleteProject,
 }: ProjectSidebarProps) {
+  const router = useRouter();
   const ownedProjects = projects.filter((p) => p.owned);
   const sharedProjects = projects.filter((p) => !p.owned);
 
@@ -78,10 +79,6 @@ export function ProjectSidebar({
 
   const [selectedTab, setSelectedTab] = useState(initialTab);
   const router = useRouter();
-
-  function handleSelect(project: Project) {
-    router.push(`/editor/${project.id}`);
-  }
 
   return (
     <>
@@ -144,7 +141,7 @@ export function ProjectSidebar({
                       project={project}
                       isActive={project.id === activeProjectId}
                       showActions
-                      onSelect={handleSelect}
+                      onSelect={() => router.push(`/editor/${project.id}`)}
                       onRename={onRenameProject}
                       onDelete={onDeleteProject}
                     />
@@ -169,7 +166,7 @@ export function ProjectSidebar({
                       project={project}
                       isActive={project.id === activeProjectId}
                       showActions={false}
-                      onSelect={handleSelect}
+                      onSelect={() => router.push(`/editor/${project.id}`)}
                       onRename={onRenameProject}
                       onDelete={onDeleteProject}
                     />

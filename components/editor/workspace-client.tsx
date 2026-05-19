@@ -9,15 +9,16 @@ import { DeleteProjectDialog } from "@/components/editor/delete-project-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useProjectActions } from "@/hooks/use-project-actions";
 import type { Project } from "@/hooks/use-project-actions";
-import { CanvasWrapper } from "@/components/editor/canvas-wrapper";
+import { ShareDialog } from "@/components/editor/share-dialog";
 
 interface WorkspaceClientProps {
   project: { id: string; name: string };
+  isOwner: boolean;
   ownedProjects: Project[];
   sharedProjects: Project[];
 }
 
-export function WorkspaceClient({ project, ownedProjects, sharedProjects }: WorkspaceClientProps) {
+export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProjects }: WorkspaceClientProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
@@ -97,16 +98,12 @@ export function WorkspaceClient({ project, ownedProjects, sharedProjects }: Work
         onConfirm={handleDelete}
       />
 
-      <Dialog open={isShareOpen} onOpenChange={setIsShareOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Share project</DialogTitle>
-            <DialogDescription>
-              Sharing is coming soon. You will be able to invite collaborators by email and manage their access here.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+      <ShareDialog
+        projectId={project.id}
+        isOwner={isOwner}
+        open={isShareOpen}
+        onOpenChange={setIsShareOpen}
+      />
     </div>
   );
 }

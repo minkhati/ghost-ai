@@ -6,6 +6,7 @@ import { ProjectSidebar } from "@/components/editor/project-sidebar";
 import { CreateProjectDialog } from "@/components/editor/create-project-dialog";
 import { RenameProjectDialog } from "@/components/editor/rename-project-dialog";
 import { DeleteProjectDialog } from "@/components/editor/delete-project-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useProjectActions } from "@/hooks/use-project-actions";
 import type { Project } from "@/hooks/use-project-actions";
 import { ShareDialog } from "@/components/editor/share-dialog";
@@ -61,8 +62,8 @@ export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProject
       />
 
       <main className="pt-12 h-full flex overflow-hidden">
-        <div className="flex-1 bg-base flex items-center justify-center">
-          <p className="text-sm text-copy-muted">Canvas coming soon</p>
+        <div className="flex-1 overflow-hidden">
+          <CanvasWrapper roomId={project.id} />
         </div>
 
         {isAiOpen && (

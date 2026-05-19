@@ -9,15 +9,28 @@ change.
 
 ## Current Goal
 
-- Feature 09 — Share Dialog (feature-specs/09-share-dialog.md) ✓ Complete
+- Feature 12 — Shape Panel (feature-specs/12-shape-panel.md) ✓ Complete
 
 ## Completed
 
-- **Feature 09 — Share Dialog** (feature-specs/09-share-dialog.md)
-  - `app/api/projects/[projectId]/collaborators/route.ts` — `GET` lists collaborators enriched with Clerk display name and avatar; `POST` invites by email (owner only, validates format, returns 409 on duplicate); `DELETE` removes by email from request body (owner only); all routes use `getCurrentIdentity()` + `getProjectWithAccess()` for auth and access
-  - `components/editor/share-dialog.tsx` — client dialog: fetches collaborators on open; owners see email invite form with error feedback, collaborator list with per-row remove buttons, and copy-link button with "Copied!" feedback; collaborators see list only; Clerk avatar/displayName rendered when available, email fallback otherwise
-  - `components/editor/workspace-client.tsx` — added `isOwner: boolean` prop, `isShareOpen` state, wired `onShare` to `EditorNavbar`, renders `ShareDialog`
-  - `app/editor/[roomId]/page.tsx` — passes `isOwner={project.ownerId === userId}` to `WorkspaceClient`
+- **Feature 12 — Shape Panel** (feature-specs/12-shape-panel.md)
+  - `types/canvas.ts` — added `ShapeType` union, `ShapeDragPayload` interface, `SHAPE_SIZES` map (sensible defaults per spec), `DEFAULT_NODE_COLOR`
+  - `components/editor/shape-panel.tsx` — floating pill toolbar with draggable icon buttons for rectangle, diamond, circle, pill, cylinder, hexagon; sets `application/ghost-shape` drag payload with shape name and size
+  - `components/editor/canvas-node.tsx` — basic renderer for `canvasNode` type; bordered rectangle with centered label, target/source handles; selected state uses `border-accent-primary`
+  - `components/editor/canvas.tsx` — wrapped in `ReactFlowProvider` so `useReactFlow` is available; `CanvasInner` handles `onDragOver`/`onDrop`, converts screen coords via `screenToFlowPosition`, creates node via `onNodesChange([{ type: "add", item }])`; `useLiveblocksFlow<CanvasNode, CanvasEdge>` typed; `nodeTypes` constant registered; `ShapePanel` rendered inside `<Panel position="bottom-center">`; node ID format: `{shape}-{timestamp}-{counter}`
+
+- **Feature 11 — Base Canvas** (feature-specs/11-base-canvas.md)
+  - `types/canvas.ts` — `CanvasNodeData` interface (`label`, `color`, `shape`); `CanvasNode` and `CanvasEdge` typed aliases via `@xyflow/react` `Node`/`Edge`
+  - `components/editor/canvas.tsx` — client component; `useLiveblocksFlow({ suspense: true, nodes: { initial: [] }, edges: { initial: [] } })`; `ReactFlow` with `ConnectionMode.Loose`, `fitView`, `MiniMap`, dot-pattern `Background`, and `Cursors`
+  - `components/editor/canvas-wrapper.tsx` — client component; `LiveblocksProvider` (`authEndpoint="/api/liveblocks-auth"`), `RoomProvider` (room ID + `initialPresence: { cursor: null, isThinking: false }`), `CanvasErrorBoundary` (class-based), `ClientSideSuspense` loading fallback
+  - `components/editor/workspace-client.tsx` — canvas placeholder replaced with `<CanvasWrapper roomId={project.id} />`
+
+- **Feature 10 — Liveblocks Setup** (feature-specs/10-liveblocks-setup.md)
+  - `liveblocks.config.ts` — typed `Presence` (`cursor: { x; y } | null`, `isThinking: boolean`) and `UserMeta` (`id`, `info.name`, `info.avatar`, `info.color`)
+  - `lib/liveblocks.ts` — lazy `getLiveblocks()` singleton (global-cached, deferred past build time); `getCursorColor(userId)` maps any user ID deterministically to one of 8 fixed colors via djb2-style hash
+  - `app/api/liveblocks-auth/route.ts` — `POST`; requires Clerk auth; verifies project access via `getProjectWithAccess`; calls `getOrCreateRoom` (private by default); issues ID token with `name`, `avatar`, `color`; returns `403` for unauthorized access
+  - `@liveblocks/node` — installed (was missing from dependencies)
+  - `.env.local` — added `LIVEBLOCKS_SECRET_KEY` placeholder (populate from Liveblocks dashboard)
 
 - **Feature 08 — Editor Workspace Shell** (feature-specs/08-editor-workspace-shell.md)
   - `lib/project-access.ts` — `getCurrentIdentity()` returns `{ userId, email }` via Clerk; `getProjectWithAccess(roomId, userId, email)` checks owner or collaborator before returning the project
@@ -92,7 +105,7 @@ change.
 
 ## Next Up
 
-- Feature 10 (check context/feature-specs/ for the next spec file)
+- Feature 13 (check context/feature-specs/ for the next spec file)
 
 ## Open Questions
 

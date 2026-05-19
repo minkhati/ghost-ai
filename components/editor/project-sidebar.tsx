@@ -78,6 +78,7 @@ export function ProjectSidebar({
       : "my-projects";
 
   const [selectedTab, setSelectedTab] = useState(initialTab);
+  const router = useRouter();
 
   return (
     <>

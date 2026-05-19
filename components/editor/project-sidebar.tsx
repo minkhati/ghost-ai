@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Pencil, Plus, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,13 +21,17 @@ interface ProjectItemProps {
   project: Project;
   isActive?: boolean;
   showActions: boolean;
+  onSelect: (project: Project) => void;
   onRename: (project: Project) => void;
   onDelete: (project: Project) => void;
 }
 
-function ProjectItem({ project, isActive, showActions, onRename, onDelete }: ProjectItemProps) {
+function ProjectItem({ project, isActive, showActions, onSelect, onRename, onDelete }: ProjectItemProps) {
   return (
-    <div className={["group flex items-center gap-1 rounded-xl px-2 py-1.5 cursor-pointer", isActive ? "bg-elevated" : "hover:bg-elevated"].join(" ")}>
+    <div
+      onClick={() => onSelect(project)}
+      className={["group flex items-center gap-1 rounded-xl px-2 py-1.5 cursor-pointer", isActive ? "bg-elevated" : "hover:bg-elevated"].join(" ")}
+    >
       <span className="flex-1 text-sm text-copy-primary truncate">{project.name}</span>
       {showActions && (
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -72,13 +77,11 @@ export function ProjectSidebar({
       : "my-projects";
 
   const [selectedTab, setSelectedTab] = useState(initialTab);
+  const router = useRouter();
 
-  useEffect(() => {
-    if (!activeProjectId) return;
-    setSelectedTab(
-      sharedProjects.some((p) => p.id === activeProjectId) ? "shared" : "my-projects"
-    );
-  }, [activeProjectId, sharedProjects]);
+  function handleSelect(project: Project) {
+    router.push(`/editor/${project.id}`);
+  }
 
   return (
     <>
@@ -141,6 +144,7 @@ export function ProjectSidebar({
                       project={project}
                       isActive={project.id === activeProjectId}
                       showActions
+                      onSelect={handleSelect}
                       onRename={onRenameProject}
                       onDelete={onDeleteProject}
                     />
@@ -165,6 +169,7 @@ export function ProjectSidebar({
                       project={project}
                       isActive={project.id === activeProjectId}
                       showActions={false}
+                      onSelect={handleSelect}
                       onRename={onRenameProject}
                       onDelete={onDeleteProject}
                     />

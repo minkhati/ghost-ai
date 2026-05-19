@@ -6,8 +6,10 @@ import { ProjectSidebar } from "@/components/editor/project-sidebar";
 import { CreateProjectDialog } from "@/components/editor/create-project-dialog";
 import { RenameProjectDialog } from "@/components/editor/rename-project-dialog";
 import { DeleteProjectDialog } from "@/components/editor/delete-project-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useProjectActions } from "@/hooks/use-project-actions";
 import type { Project } from "@/hooks/use-project-actions";
+import { CanvasWrapper } from "@/components/editor/canvas-wrapper";
 
 interface WorkspaceClientProps {
   project: { id: string; name: string };
@@ -18,6 +20,7 @@ interface WorkspaceClientProps {
 export function WorkspaceClient({ project, ownedProjects, sharedProjects }: WorkspaceClientProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const {
     activeDialog,
@@ -42,6 +45,7 @@ export function WorkspaceClient({ project, ownedProjects, sharedProjects }: Work
         isSidebarOpen={isSidebarOpen}
         onSidebarToggle={() => setIsSidebarOpen((prev) => !prev)}
         title={project.name}
+        onShare={() => setIsShareOpen(true)}
         isAiOpen={isAiOpen}
         onAiToggle={() => setIsAiOpen((prev) => !prev)}
       />
@@ -57,8 +61,8 @@ export function WorkspaceClient({ project, ownedProjects, sharedProjects }: Work
       />
 
       <main className="pt-12 h-full flex overflow-hidden">
-        <div className="flex-1 bg-base flex items-center justify-center">
-          <p className="text-sm text-copy-muted">Canvas coming soon</p>
+        <div className="flex-1 overflow-hidden">
+          <CanvasWrapper roomId={project.id} />
         </div>
 
         {isAiOpen && (
@@ -92,6 +96,17 @@ export function WorkspaceClient({ project, ownedProjects, sharedProjects }: Work
         project={selectedProject}
         onConfirm={handleDelete}
       />
+
+      <Dialog open={isShareOpen} onOpenChange={setIsShareOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share project</DialogTitle>
+            <DialogDescription>
+              Sharing is coming soon. You will be able to invite collaborators by email and manage their access here.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

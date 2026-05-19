@@ -6,9 +6,9 @@ import { ProjectSidebar } from "@/components/editor/project-sidebar";
 import { CreateProjectDialog } from "@/components/editor/create-project-dialog";
 import { RenameProjectDialog } from "@/components/editor/rename-project-dialog";
 import { DeleteProjectDialog } from "@/components/editor/delete-project-dialog";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useProjectActions } from "@/hooks/use-project-actions";
 import type { Project } from "@/hooks/use-project-actions";
+import { CanvasWrapper } from "@/components/editor/canvas-wrapper";
 import { ShareDialog } from "@/components/editor/share-dialog";
 
 interface WorkspaceClientProps {

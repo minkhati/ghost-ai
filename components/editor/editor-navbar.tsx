@@ -1,8 +1,8 @@
 "use client";
 
-import { LayoutTemplate, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Share2 } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
+import { AlertCircle, Check, LayoutTemplate, Loader2, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { SaveStatus } from "@/hooks/useCanvasAutosave";
 
 interface EditorNavbarProps {
   isSidebarOpen: boolean;
@@ -12,6 +12,7 @@ interface EditorNavbarProps {
   onShare?: () => void;
   isAiOpen?: boolean;
   onAiToggle?: () => void;
+  saveStatus?: SaveStatus;
 }
 
 export function EditorNavbar({
@@ -22,6 +23,7 @@ export function EditorNavbar({
   onShare,
   isAiOpen,
   onAiToggle,
+  saveStatus,
 }: EditorNavbarProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 h-12 flex items-center px-3 bg-surface border-b border-surface-border">
@@ -51,6 +53,31 @@ export function EditorNavbar({
       <div className="flex-1" />
 
       <div className="flex items-center gap-1">
+        {saveStatus !== undefined && (
+          <div className="flex items-center gap-1.5 px-2 text-xs select-none min-w-[80px] justify-end">
+            {saveStatus === "idle" && (
+              <span className="text-copy-faint">Auto-save on</span>
+            )}
+            {saveStatus === "saving" && (
+              <>
+                <Loader2 className="h-3 w-3 animate-spin text-copy-muted" />
+                <span className="text-copy-muted">Saving…</span>
+              </>
+            )}
+            {saveStatus === "saved" && (
+              <>
+                <Check className="h-3 w-3 text-success" />
+                <span className="text-copy-secondary">Saved</span>
+              </>
+            )}
+            {saveStatus === "error" && (
+              <>
+                <AlertCircle className="h-3 w-3 text-error" />
+                <span className="text-error">Error saving</span>
+              </>
+            )}
+          </div>
+        )}
         {onOpenTemplates && (
           <Button
             variant="ghost"
@@ -89,7 +116,6 @@ export function EditorNavbar({
             )}
           </Button>
         )}
-        <UserButton />
       </div>
     </header>
   );

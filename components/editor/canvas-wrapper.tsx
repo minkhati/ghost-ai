@@ -3,6 +3,7 @@
 import React from "react";
 import { LiveblocksProvider, RoomProvider, ClientSideSuspense } from "@liveblocks/react";
 import { Canvas } from "@/components/editor/canvas";
+import type { SaveStatus } from "@/hooks/useCanvasAutosave";
 
 interface Props {
   children: React.ReactNode;
@@ -45,18 +46,24 @@ interface CanvasWrapperProps {
   roomId: string;
   isTemplatesOpen: boolean;
   onCloseTemplates: () => void;
+  onSaveStatusChange?: (status: SaveStatus) => void;
 }
 
-export function CanvasWrapper({ roomId, isTemplatesOpen, onCloseTemplates }: CanvasWrapperProps) {
+export function CanvasWrapper({ roomId, isTemplatesOpen, onCloseTemplates, onSaveStatusChange }: CanvasWrapperProps) {
   return (
     <LiveblocksProvider authEndpoint="/api/liveblocks-auth">
       <RoomProvider
         id={roomId}
-        initialPresence={{ cursor: null, isThinking: false }}
+        initialPresence={{ cursor: null, thinking: false }}
       >
         <CanvasErrorBoundary fallback={errorFallback}>
           <ClientSideSuspense fallback={loadingFallback}>
-            <Canvas isTemplatesOpen={isTemplatesOpen} onCloseTemplates={onCloseTemplates} />
+            <Canvas
+              projectId={roomId}
+              isTemplatesOpen={isTemplatesOpen}
+              onCloseTemplates={onCloseTemplates}
+              onSaveStatusChange={onSaveStatusChange}
+            />
           </ClientSideSuspense>
         </CanvasErrorBoundary>
       </RoomProvider>

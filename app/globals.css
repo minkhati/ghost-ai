@@ -335,6 +335,105 @@
     cursor: default;
 }
 
+/* Presence avatar group — top-right panel inside the canvas */
+.presence-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: 999px;
+    padding: 4px 8px;
+    margin: 8px;
+}
+
+.presence-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px var(--avatar-ring, var(--border-subtle));
+}
+
+.presence-avatar + .presence-avatar {
+    margin-left: -6px;
+}
+
+.presence-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.presence-avatar-initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    background: var(--initials-bg, var(--bg-subtle));
+}
+
+.presence-overflow {
+    height: 28px;
+    border-radius: 999px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+    border: 1px solid var(--border-default);
+    margin-left: -6px;
+    flex-shrink: 0;
+}
+
+.presence-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border-default);
+    margin: 0 2px;
+    flex-shrink: 0;
+}
+
+/* Match Clerk UserButton avatar size to collaborator avatars */
+.presence-group .cl-userButtonAvatarBox {
+    width: 28px !important;
+    height: 28px !important;
+}
+
+/* Live cursor — rendered by Cursors component inside the canvas */
+.canvas-cursor {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.canvas-cursor-pointer {
+    display: block;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.canvas-cursor-badge {
+    position: absolute;
+    top: 18px;
+    left: 10px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    color: white;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    background: var(--cursor-bg);
+}
+
 /* Inline edge label input */
 .canvas-edge-input {
     background: var(--bg-elevated);

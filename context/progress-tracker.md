@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Feature 21 — Canvas Autosave (feature-specs/21-canvas-autosave.md) ✓ Complete
+- Feature 22 (check context/feature-specs/ for the next spec file)
 
 ## Completed
 

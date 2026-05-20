@@ -12,6 +12,7 @@ interface AiSidebarProps {
 }
 
 interface Message {
+  id: string;
   role: "user" | "assistant";
   content: string;
 }
@@ -36,7 +37,11 @@ export function AiSidebar({ isOpen, onClose }: AiSidebarProps) {
   const handleSend = () => {
     const trimmed = input.trim();
     if (!trimmed) return;
-    setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
+    setMessages((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), role: "user", content: trimmed },
+      { id: crypto.randomUUID(), role: "assistant", content: "AI generation coming soon." },
+    ]);
     setInput("");
   };
 
@@ -48,7 +53,11 @@ export function AiSidebar({ isOpen, onClose }: AiSidebarProps) {
   };
 
   const handleChip = (chip: string) => {
-    setMessages((prev) => [...prev, { role: "user", content: chip }]);
+    setMessages((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), role: "user", content: chip },
+      { id: crypto.randomUUID(), role: "assistant", content: "AI generation coming soon." },
+    ]);
   };
 
   return (
@@ -69,6 +78,7 @@ export function AiSidebar({ isOpen, onClose }: AiSidebarProps) {
         <button
           type="button"
           onClick={onClose}
+          aria-label="Close AI sidebar"
           className="h-7 w-7 flex items-center justify-center rounded-md text-copy-muted hover:bg-subtle hover:text-copy-primary transition-colors"
         >
           <X className="h-4 w-4" />
@@ -122,9 +132,9 @@ export function AiSidebar({ isOpen, onClose }: AiSidebarProps) {
                 </div>
               </div>
             ) : (
-              messages.map((msg, i) => (
+              messages.map((msg) => (
                 <div
-                  key={i}
+                  key={msg.id}
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div

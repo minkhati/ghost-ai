@@ -9,9 +9,29 @@ change.
 
 ## Current Goal
 
-- Feature 18 — Starter Templates (feature-specs/18-starter-template.md) ✓ Complete
+- Feature 21 — Canvas Autosave (feature-specs/21-canvas-autosave.md) ✓ Complete
 
 ## Completed
+
+- **Feature 21 — Canvas Autosave** (feature-specs/21-canvas-autosave.md)
+  - `@vercel/blob` installed (v2.4.0)
+  - `app/api/projects/[projectId]/canvas/route.ts` — `GET` reads `canvasJsonPath` from Prisma and proxies the blob JSON back; `PUT` uploads canvas JSON to `canvas/{projectId}.json` in Vercel Blob (deterministic path with `addRandomSuffix: false, allowOverwrite: true`), then stores the returned URL on the Prisma project's `canvasJsonPath` field; both routes require Clerk auth and check owner-or-collaborator access via `getProjectWithAccess`
+  - `hooks/useCanvasAutosave.ts` — `useCanvasAutosave({ projectId, nodes, edges, enabled })` hook; 2-second debounce with abort-controller cancellation on overlapping saves; tracks `SaveStatus`: `idle | saving | saved | error`; `enabled` gate prevents any save until the initial canvas load attempt is complete
+  - `components/editor/canvas.tsx` — added `projectId` and `onSaveStatusChange` props through `Canvas` → `CanvasInner`; mount-only `useEffect` checks initial `nodes.length / edges.length`—if room already has content, enables autosave immediately; if room is empty, fetches from `/api/projects/{id}/canvas`, loads nodes+edges via Liveblocks `onNodesChange/onEdgesChange`, fits view, then enables autosave; `useCanvasAutosave` wired with `autosaveEnabled` gate; status bubbled up via stable ref callback
+  - `components/editor/canvas-wrapper.tsx` — added `onSaveStatusChange` prop; passes `roomId` as `projectId` to `Canvas`
+  - `components/editor/editor-navbar.tsx` — added `saveStatus?: SaveStatus` prop; renders inline status indicator (Loader2 spinning / Check green / AlertCircle red) before the Templates button; "Saved" state visible until reset by parent
+  - `components/editor/workspace-client.tsx` — added `saveStatus` state + `handleSaveStatusChange` callback (auto-resets to `idle` 2 s after `saved`); wired to `CanvasWrapper` and `EditorNavbar`
+
+- **Feature 20 — AI Sidebar Shell** (feature-specs/20-ai-sidebar-shell.md)
+  - `components/editor/ai-sidebar.tsx` — new component; accepts `isOpen`/`onClose` props; fixed-position overlay sliding in from right with `transition-transform duration-300`; header with Bot icon, "AI Workspace" title, "Collaborate with Ghost AI" subtitle, and close button; Base UI `Tabs` with `AI Architect` and `Specs` tabs; active tab uses `data-active:bg-subtle data-active:text-brand`, inactive uses `text-copy-muted`; AI Architect tab has scrollable chat area with empty state (Bot icon, description, three starter chips styled as `bg-subtle text-ai-text` pills), user messages right-aligned with `bg-accent-dim border-brand/50 border-2 text-copy-primary`, assistant messages left-aligned with `bg-elevated border-surface-border text-ai-text`, auto-resizing textarea (min 72px / max 160px), Enter submits / Shift+Enter newlines, Send button with `bg-brand`; Specs tab has Generate Spec button and a static demo spec card with `bg-elevated border-surface-border` containing file icon, title, snippet, and disabled download action
+  - `components/editor/workspace-client.tsx` — removed inline `<aside>` placeholder; always renders `<AiSidebar isOpen={isAiOpen} onClose={...} />`; canvas `<main>` simplified to full-height without the flex sidebar sibling (sidebar is now fixed-positioned)
+
+- **Feature 19 — Presence Avatars & Cursors** (feature-specs/19-presence-avatars-cursor.md)
+  - `liveblocks.config.ts` — renamed `isThinking` → `thinking` in `Presence` type to match spec
+  - `components/editor/canvas-wrapper.tsx` — updated `initialPresence` to `{ cursor: null, thinking: false }`
+  - `components/editor/presence-avatars.tsx` — new component; uses `useOthersMapped` to get collaborator info (id, name, avatar, color); filters out the current Clerk user by `other.id === user?.id`; renders up to 5 overlapping `CollaboratorAvatar` items with photo-or-initials fallback and per-user ring color; `+N` overflow chip when collaborators > 5; vertical divider only when at least one collaborator exists; Clerk `UserButton` always rendered at end; CSS custom properties (`--avatar-ring`, `--initials-bg`) set via named const variables to satisfy the no-inline-style linter rule
+  - `components/editor/canvas.tsx` — added `CanvasCursor` component: uses `useOther(connectionId, o => o.info)` from `@liveblocks/react/suspense`, renders SVG pointer arrow + pill name badge with `--cursor-bg` CSS custom property; passed via `<Cursors components={{ Cursor: CanvasCursor }} />`; added `useMyPresence` to broadcast cursor position on `onMouseMove` and clear it to `null` on `onMouseLeave` of the canvas wrapper div; added `<Panel position="top-right"><PresenceAvatars /></Panel>` inside ReactFlow
+  - `app/globals.css` — added `.presence-group` pill container, `.presence-avatar` with `--avatar-ring` ring, `.presence-avatar-img`, `.presence-avatar-initials` with `--initials-bg`, `.presence-overflow` chip, `.presence-divider`, `.cl-userButtonAvatarBox` size override; `.canvas-cursor` absolute overlay, `.canvas-cursor-pointer` SVG with drop-shadow, `.canvas-cursor-badge` pill with `--cursor-bg`
 
 - **Feature 18 — Starter Templates** (feature-specs/18-starter-template.md)
   - `components/editor/starter-templates.ts` — `CanvasTemplate` interface; helper functions `n()`/`e()` for concise node/edge creation; `CANVAS_TEMPLATES` array with three predefined templates: Microservices (API gateway → auth/user/order services, DBs, message broker), CI/CD Pipeline (source → build → test → staging → production with artifact store and monitoring), Event-Driven System (3 producers → event bus → 3 consumers); all nodes use `NODE_COLORS` palette and `SHAPE_SIZES`
@@ -142,7 +162,7 @@ change.
 
 ## Next Up
 
-- Feature 19 (check context/feature-specs/ for the next spec file)
+- Feature 22 (check context/feature-specs/ for the next spec file)
 
 ## Open Questions
 

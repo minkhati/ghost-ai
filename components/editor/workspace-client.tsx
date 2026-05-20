@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { EditorNavbar } from "@/components/editor/editor-navbar";
 import { ProjectSidebar } from "@/components/editor/project-sidebar";
 import { CreateProjectDialog } from "@/components/editor/create-project-dialog";
@@ -10,6 +10,8 @@ import { useProjectActions } from "@/hooks/use-project-actions";
 import type { Project } from "@/hooks/use-project-actions";
 import { CanvasWrapper } from "@/components/editor/canvas-wrapper";
 import { ShareDialog } from "@/components/editor/share-dialog";
+import { AiSidebar } from "@/components/editor/ai-sidebar";
+import type { SaveStatus } from "@/hooks/useCanvasAutosave";
 
 interface WorkspaceClientProps {
   project: { id: string; name: string };
@@ -23,6 +25,11 @@ export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProject
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+
+  const handleSaveStatusChange = useCallback((status: SaveStatus) => {
+    setSaveStatus(status);
+  }, []);
 
   const {
     activeDialog,
@@ -51,6 +58,7 @@ export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProject
         onShare={() => setIsShareOpen(true)}
         isAiOpen={isAiOpen}
         onAiToggle={() => setIsAiOpen((prev) => !prev)}
+        saveStatus={saveStatus}
       />
 
       <ProjectSidebar
@@ -63,21 +71,16 @@ export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProject
         onDeleteProject={openDelete}
       />
 
-      <main className="pt-12 h-full flex overflow-hidden">
-        <div className="flex-1 overflow-hidden">
-          <CanvasWrapper
-            roomId={project.id}
-            isTemplatesOpen={isTemplatesOpen}
-            onCloseTemplates={() => setIsTemplatesOpen(false)}
-          />
-        </div>
-
-        {isAiOpen && (
-          <aside className="w-80 shrink-0 border-l border-surface-border bg-surface flex items-center justify-center">
-            <p className="text-sm text-copy-muted">AI chat coming soon</p>
-          </aside>
-        )}
+      <main className="pt-12 h-full overflow-hidden">
+        <CanvasWrapper
+          roomId={project.id}
+          isTemplatesOpen={isTemplatesOpen}
+          onCloseTemplates={() => setIsTemplatesOpen(false)}
+          onSaveStatusChange={handleSaveStatusChange}
+        />
       </main>
+
+      <AiSidebar isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />
 
       <CreateProjectDialog
         open={activeDialog === "create"}

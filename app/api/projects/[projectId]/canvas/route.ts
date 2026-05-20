@@ -21,9 +21,35 @@ export async function GET(
     return Response.json({ error: "No saved canvas" }, { status: 404 });
   }
 
-  const blobRes = await fetch(project.canvasJsonPath, {
-    headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN ?? ""}` },
-  });
+  let blobUrl: URL;
+  try {
+    blobUrl = new URL(project.canvasJsonPath);
+  } catch {
+    return Response.json({ error: "Invalid canvas blob URL" }, { status: 502 });
+  }
+  if (
+    blobUrl.protocol !== "https:" ||
+    !blobUrl.hostname.endsWith(".blob.vercel-storage.com")
+  ) {
+    return Response.json({ error: "Canvas blob URL not allowed" }, { status: 502 });
+  }
+
+  const blobAbort = new AbortController();
+  const blobTimer = setTimeout(() => blobAbort.abort(), 10_000);
+  let blobRes: Response;
+  try {
+    blobRes = await fetch(blobUrl.href, {
+      headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN ?? ""}` },
+      signal: blobAbort.signal,
+    });
+  } catch (err) {
+    clearTimeout(blobTimer);
+    if (err instanceof Error && err.name === "AbortError") {
+      return Response.json({ error: "Canvas blob fetch timed out" }, { status: 504 });
+    }
+    return Response.json({ error: "Failed to fetch canvas blob" }, { status: 502 });
+  }
+  clearTimeout(blobTimer);
   if (!blobRes.ok) {
     return Response.json({ error: "Failed to fetch canvas blob" }, { status: 502 });
   }

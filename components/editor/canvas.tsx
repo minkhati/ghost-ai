@@ -149,6 +149,8 @@ function CanvasInner({
   onEdgesChangeRef.current = onEdgesChange;
   const onSaveStatusChangeRef = useRef(onSaveStatusChange);
   onSaveStatusChangeRef.current = onSaveStatusChange;
+  const liveHasContentRef = useRef(false);
+  liveHasContentRef.current = nodes.length > 0 || edges.length > 0;
 
   const undo = useUndo();
   const redo = useRedo();
@@ -174,7 +176,7 @@ function CanvasInner({
       .then(async (res) => {
         if (!res.ok || cancelled) return;
         const data = await res.json();
-        if (cancelled) return;
+        if (cancelled || liveHasContentRef.current) return;
         if (Array.isArray(data.nodes) && data.nodes.length > 0) {
           onNodesChangeRef.current(data.nodes.map((n: CanvasNode) => ({ type: "add" as const, item: n })));
           setTimeout(() => flow.fitView({ duration: 300 }), 150);

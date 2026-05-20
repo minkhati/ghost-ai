@@ -46,6 +46,7 @@ export function useCanvasAutosave({
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      abortRef.current?.abort();
     };
   }, [projectId, nodes, edges, enabled]);
 

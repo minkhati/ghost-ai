@@ -43,9 +43,11 @@ const loadingFallback = (
 
 interface CanvasWrapperProps {
   roomId: string;
+  isTemplatesOpen: boolean;
+  onCloseTemplates: () => void;
 }
 
-export function CanvasWrapper({ roomId }: CanvasWrapperProps) {
+export function CanvasWrapper({ roomId, isTemplatesOpen, onCloseTemplates }: CanvasWrapperProps) {
   return (
     <LiveblocksProvider authEndpoint="/api/liveblocks-auth">
       <RoomProvider
@@ -54,7 +56,7 @@ export function CanvasWrapper({ roomId }: CanvasWrapperProps) {
       >
         <CanvasErrorBoundary fallback={errorFallback}>
           <ClientSideSuspense fallback={loadingFallback}>
-            <Canvas />
+            <Canvas isTemplatesOpen={isTemplatesOpen} onCloseTemplates={onCloseTemplates} />
           </ClientSideSuspense>
         </CanvasErrorBoundary>
       </RoomProvider>

@@ -22,6 +22,7 @@ export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProject
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
 
   const {
     activeDialog,
@@ -46,6 +47,7 @@ export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProject
         isSidebarOpen={isSidebarOpen}
         onSidebarToggle={() => setIsSidebarOpen((prev) => !prev)}
         title={project.name}
+        onOpenTemplates={() => setIsTemplatesOpen(true)}
         onShare={() => setIsShareOpen(true)}
         isAiOpen={isAiOpen}
         onAiToggle={() => setIsAiOpen((prev) => !prev)}
@@ -63,7 +65,11 @@ export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProject
 
       <main className="pt-12 h-full flex overflow-hidden">
         <div className="flex-1 overflow-hidden">
-          <CanvasWrapper roomId={project.id} />
+          <CanvasWrapper
+            roomId={project.id}
+            isTemplatesOpen={isTemplatesOpen}
+            onCloseTemplates={() => setIsTemplatesOpen(false)}
+          />
         </div>
 
         {isAiOpen && (

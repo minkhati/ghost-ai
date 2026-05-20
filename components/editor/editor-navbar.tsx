@@ -1,6 +1,6 @@
 "use client";
 
-import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Share2 } from "lucide-react";
+import { LayoutTemplate, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Share2 } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 
@@ -8,6 +8,7 @@ interface EditorNavbarProps {
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
   title?: string;
+  onOpenTemplates?: () => void;
   onShare?: () => void;
   isAiOpen?: boolean;
   onAiToggle?: () => void;
@@ -17,6 +18,7 @@ export function EditorNavbar({
   isSidebarOpen,
   onSidebarToggle,
   title,
+  onOpenTemplates,
   onShare,
   isAiOpen,
   onAiToggle,
@@ -49,6 +51,17 @@ export function EditorNavbar({
       <div className="flex-1" />
 
       <div className="flex items-center gap-1">
+        {onOpenTemplates && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onOpenTemplates}
+            className="gap-1.5 text-copy-muted hover:text-copy-primary"
+          >
+            <LayoutTemplate className="h-4 w-4" />
+            Templates
+          </Button>
+        )}
         {onShare && (
           <Button
             variant="ghost"

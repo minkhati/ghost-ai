@@ -173,3 +173,178 @@
         @apply font-sans;
     }
 }
+
+/* Drag-preview overlay — position driven by CSS custom props set inline */
+.drag-preview {
+    position: fixed;
+    left: var(--preview-x);
+    top: var(--preview-y);
+    pointer-events: none;
+    opacity: 0.65;
+    z-index: 9999;
+}
+
+.drag-preview-shape {
+    width: var(--preview-w);
+    height: var(--preview-h);
+    display: block;
+}
+
+/* Canvas node shape — bg/text driven by per-pair CSS custom props on the root element */
+.node-shape { background-color: var(--node-bg); color: var(--node-text); }
+.node-shape-text { color: var(--node-text); }
+
+/* 8 node color pair classes — must stay in sync with NODE_COLORS in types/canvas.ts */
+.node-color-0 { --node-bg: #1F1F1F; --node-text: #EDEDED; }
+.node-color-1 { --node-bg: #10233D; --node-text: #52A8FF; }
+.node-color-2 { --node-bg: #2E1938; --node-text: #BF7AF0; }
+.node-color-3 { --node-bg: #331B00; --node-text: #FF990A; }
+.node-color-4 { --node-bg: #3C1618; --node-text: #FF6166; }
+.node-color-5 { --node-bg: #3A1726; --node-text: #F75F8F; }
+.node-color-6 { --node-bg: #0F2E18; --node-text: #62C073; }
+.node-color-7 { --node-bg: #062822; --node-text: #0AC7B4; }
+
+/* Floating color toolbar — positioned above the selected node */
+.node-color-toolbar { bottom: calc(100% + 8px); }
+
+/* Color swatches — bg/ring/glow driven by per-swatch CSS custom props */
+.node-color-swatch {
+    background-color: var(--swatch-bg);
+    border: 2px solid transparent;
+    transition: box-shadow 150ms;
+}
+.node-color-swatch--active {
+    border-color: var(--swatch-ring);
+    box-shadow: 0 0 0 1px var(--swatch-glow);
+}
+.node-color-swatch:not(.node-color-swatch--active):hover {
+    box-shadow: 0 0 5px 1px var(--swatch-hover-glow);
+}
+
+/* 8 swatch color pair classes — must stay in sync with NODE_COLORS in types/canvas.ts */
+.node-swatch-0 { --swatch-bg: #1F1F1F; --swatch-ring: #EDEDED; --swatch-glow: #EDEDED40; --swatch-hover-glow: #EDEDED60; }
+.node-swatch-1 { --swatch-bg: #10233D; --swatch-ring: #52A8FF; --swatch-glow: #52A8FF40; --swatch-hover-glow: #52A8FF60; }
+.node-swatch-2 { --swatch-bg: #2E1938; --swatch-ring: #BF7AF0; --swatch-glow: #BF7AF040; --swatch-hover-glow: #BF7AF060; }
+.node-swatch-3 { --swatch-bg: #331B00; --swatch-ring: #FF990A; --swatch-glow: #FF990A40; --swatch-hover-glow: #FF990A60; }
+.node-swatch-4 { --swatch-bg: #3C1618; --swatch-ring: #FF6166; --swatch-glow: #FF616640; --swatch-hover-glow: #FF616660; }
+.node-swatch-5 { --swatch-bg: #3A1726; --swatch-ring: #F75F8F; --swatch-glow: #F75F8F40; --swatch-hover-glow: #F75F8F60; }
+.node-swatch-6 { --swatch-bg: #0F2E18; --swatch-ring: #62C073; --swatch-glow: #62C07340; --swatch-hover-glow: #62C07360; }
+.node-swatch-7 { --swatch-bg: #062822; --swatch-ring: #0AC7B4; --swatch-glow: #0AC7B440; --swatch-hover-glow: #0AC7B460; }
+
+/* Connection handles — hidden by default, fade in on canvasNode hover */
+.react-flow__node-canvasNode .react-flow__handle {
+    width: 8px;
+    height: 8px;
+    min-width: 8px;
+    min-height: 8px;
+    background: #ffffff;
+    border: 1.5px solid var(--border-default);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 150ms ease, background 120ms ease, border-color 120ms ease;
+}
+.react-flow__node-canvasNode:hover .react-flow__handle {
+    opacity: 1;
+}
+.react-flow__node-canvasNode .react-flow__handle:hover {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+/* Custom edge path */
+.canvas-edge-path {
+    stroke: var(--border-subtle);
+    stroke-width: 1.5;
+    fill: none;
+    transition: stroke 120ms ease;
+}
+.react-flow__edge:hover .canvas-edge-path,
+.canvas-edge-path--selected {
+    stroke: var(--text-primary);
+}
+
+/* Edge label pill badge */
+.canvas-edge-label {
+    display: inline-block;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    cursor: default;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Faint hint shown on selected edge with no label */
+.canvas-edge-label-hint {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--text-faint);
+    white-space: nowrap;
+    cursor: text;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Floating zoom/history control bar */
+.canvas-control-bar {
+    display: flex;
+    align-items: center;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: 999px;
+    padding: 4px;
+    gap: 2px;
+}
+
+.canvas-control-bar-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border-default);
+    margin: 0 4px;
+    flex-shrink: 0;
+}
+
+.canvas-control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease, opacity 120ms ease;
+}
+
+.canvas-control-btn:hover:not(:disabled) {
+    background: var(--bg-subtle);
+    color: var(--text-primary);
+}
+
+.canvas-control-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+/* Inline edge label input */
+.canvas-edge-input {
+    background: var(--bg-elevated);
+    border: 1px solid var(--accent-primary);
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--text-primary);
+    outline: none;
+    text-align: center;
+    min-width: 40px;
+}

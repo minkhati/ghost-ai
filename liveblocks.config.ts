@@ -1,3 +1,5 @@
+import type { LiveList, LiveObject } from "@liveblocks/client";
+
 declare global {
   interface Liveblocks {
     Presence: {
@@ -5,7 +7,19 @@ declare global {
       thinking: boolean;
     };
 
-    Storage: {};
+    Storage: {
+      aiStatusFeed: LiveObject<{
+        text?: string;
+        isActive: boolean;
+        phase?: "start" | "thinking" | "applying" | "done" | "error";
+      }>;
+      aiChatFeed: LiveList<{
+        sender: string;
+        role: "user" | "assistant";
+        content: string;
+        timestamp: number;
+      }>;
+    };
 
     UserMeta: {
       id: string;
@@ -16,7 +30,9 @@ declare global {
       };
     };
 
-    RoomEvent: {};
+    RoomEvent:
+      | { type: "AI_STATUS"; message: string; phase: "start" | "thinking" | "applying" | "done" | "error" };
+
     ThreadMetadata: {};
     RoomInfo: {};
   }

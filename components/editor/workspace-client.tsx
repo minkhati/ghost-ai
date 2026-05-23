@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { LiveblocksProvider, RoomProvider } from "@liveblocks/react";
+import { LiveList, LiveObject } from "@liveblocks/client";
 import { EditorNavbar } from "@/components/editor/editor-navbar";
 import { ProjectSidebar } from "@/components/editor/project-sidebar";
 import { CreateProjectDialog } from "@/components/editor/create-project-dialog";
@@ -49,6 +51,15 @@ export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProject
   const allProjects = [...ownedProjects, ...sharedProjects];
 
   return (
+    <LiveblocksProvider authEndpoint="/api/liveblocks-auth">
+      <RoomProvider
+        id={project.id}
+        initialPresence={{ cursor: null, thinking: false }}
+        initialStorage={{
+          aiStatusFeed: new LiveObject({ isActive: false }),
+          aiChatFeed: new LiveList([]),
+        }}
+      >
     <div className="relative h-screen bg-base overflow-hidden">
       <EditorNavbar
         isSidebarOpen={isSidebarOpen}
@@ -80,7 +91,7 @@ export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProject
         />
       </main>
 
-      <AiSidebar isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />
+      <AiSidebar isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} projectId={project.id} />
 
       <CreateProjectDialog
         open={activeDialog === "create"}
@@ -114,5 +125,7 @@ export function WorkspaceClient({ project, isOwner, ownedProjects, sharedProject
         onOpenChange={setIsShareOpen}
       />
     </div>
+      </RoomProvider>
+    </LiveblocksProvider>
   );
 }

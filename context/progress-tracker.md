@@ -9,7 +9,56 @@ change.
 
 ## Current Goal
 
-- Feature 22 (check context/feature-specs/ for the next spec file)
+- Feature 30 (check context/feature-specs/ for the next spec file)
+
+## Completed
+
+- **Feature 29 — Spec UI Integration** (feature-specs/29-spec-ui-integration.md)
+  - `react-markdown` + `remark-gfm` installed
+  - `app/api/projects/[projectId]/specs/route.ts` — `GET`; requires Clerk auth; verifies project access via `getProjectWithAccess`; returns `{ specs: [{ id, filePath, createdAt }] }` ordered by `createdAt desc`
+  - `components/editor/ai-sidebar.tsx` — Specs tab replaced: imports `Dialog`/`DialogContent`/`DialogHeader`/`DialogTitle` from shadcn, `ScrollArea`, `ReactMarkdown`, `remarkGfm`; `ProjectSpec` interface; `specFilename()` extracts filename from blob URL path; `triggerDownload()` creates a temporary anchor to trigger browser download; `fetchSpecs` callback loads spec list from the new API on mount and via "Refresh Specs" button; `openPreview` callback fetches spec markdown content from the download endpoint using `fetch()` and stores it in `previewContent`; spec list renders clickable cards showing filename + date with a hover-reveal download button; preview modal (`Dialog`) shows ReactMarkdown-rendered content in a `ScrollArea` with a Download button; all loading/error states handled; no new global state
+
+- **Feature 28 — Spec Persistence & Download** (feature-specs/28-spec-persistence-download.md)
+  - `prisma/models/project-spec.prisma` — `ProjectSpec` model with `id`, `projectId` (FK → Project with cascade delete), `filePath` (Vercel Blob URL), `createdAt`; index on `projectId`
+  - `prisma/models/project.prisma` — added `specs ProjectSpec[]` back-relation to `Project`
+  - `prisma/migrations/20260522203950_add_project_spec/` — migration applied; Prisma client regenerated
+  - `trigger/generate-spec.ts` — after spec text is generated: uploads Markdown to `specs/{projectId}/{uuid}.md` in Vercel Blob (`access: "private"`); creates `ProjectSpec` record in Prisma with the blob URL; sets `specId` in task metadata; returns `{ spec: text, specId: string }`
+  - `app/api/projects/[projectId]/specs/[specId]/download/route.ts` — `GET`; requires Clerk auth via `getCurrentIdentity`; verifies project access via `getProjectWithAccess`; looks up `ProjectSpec` by `specId`; checks `spec.projectId === projectId`; validates blob URL is a `*.blob.vercel-storage.com` HTTPS URL; fetches from Vercel Blob with `BLOB_READ_WRITE_TOKEN`; returns `text/markdown` with `Content-Disposition: attachment`; handles 401, 403, 404, 502, 504
+
+- **Feature 27 — Spec Generation Flow** (feature-specs/27-spec-generation-flow.md)
+  - `trigger/generate-spec.ts` — `generateSpec` task using `schemaTask` with full Zod validation; payload schema covers `projectId`, `roomId`, `chatHistory` (role + content), `nodes` (id, label, shape, x, y), `edges` (id, source, target, label); uses `generateText` from `ai` SDK with `google("gemini-2.0-flash")`; system prompt instructs Ghost AI to output a Markdown spec with Overview, Components, Service Interactions, Design Decisions, and Implementation Notes sections; `buildUserPrompt` formats nodes, edges, and conversation history into a structured prompt; `metadata.set` tracks `status` (starting → generating → complete/error), `nodeCount`, `edgeCount`, and `specLength`; retries 3× with exponential backoff; returns `{ spec: text }` (plain Markdown)
+  - `app/api/ai/spec/route.ts` — `POST`; requires Clerk auth; validates `roomId`, `chatHistory`, `nodes`, `edges` via Zod; resolves project access from `roomId` via `getProjectWithAccess` (never trusts client-supplied `projectId`); triggers `generate-spec` task; creates `TaskRun` record in Prisma; returns `{ runId }`
+  - `app/api/ai/spec/token/route.ts` — `POST`; requires Clerk auth; validates `runId`; looks up `TaskRun` and verifies `userId` ownership; calls `auth.createPublicToken` scoped to that run with 1h expiry; returns `{ token }`
+
+- **Feature 26 — Design Agent Frontend** (feature-specs/26-design-agent-frontend.md)
+  - `components/editor/ai-sidebar.tsx` — imported `useRealtimeRun` from `@trigger.dev/react-hooks`; added `runState: { runId: string; publicToken: string } | null` state; added `sendChatMessageRef` for stable mutation access inside event callbacks; `useRealtimeRun(runState?.runId ?? "", { accessToken: runState?.publicToken ?? "" })` tracks the active Trigger.dev run via SSE; `useEffect` on `run?.status` clears `runState` when a terminal status is detected (COMPLETED/FAILED/CANCELED/TIMED_OUT/CRASHED/INTERRUPTED/SYSTEM_FAILURE/EXPIRED); `submitPrompt` now (1) pushes the user message to the shared `aiChatFeed` LiveList, (2) calls `POST /api/ai/design` to get `runId`, (3) calls `POST /api/ai/design/token` to get `publicToken`, (4) sets `runState`; `useEventListener` handler pushes a final AI message to `aiChatFeed` when `phase === "done"`; `isInputDisabled` includes `runState !== null` guard; status strip moved from the header area into the AI Architect tab body, directly above the input — visible only when `isAiActive`; Chat tab now renders AI messages with `text-ai-text` styling to distinguish them from user messages
+
+- **Feature 25 — Sidebar Chat Feed** (feature-specs/25-sidebar-chat-feed.md)
+  - `types/tasks.ts` — added `chatMessageSchema` (zod) with `sender: string`, `role: "user" | "assistant"`, `content: string`, `timestamp: number`; exported `ChatMessage` type
+  - `liveblocks.config.ts` — added `LiveList` to import; added `aiChatFeed: LiveList<{sender, role, content, timestamp}>` to the `Storage` declaration; kept separate from `aiStatusFeed`
+  - `components/editor/workspace-client.tsx` — imported `LiveList` from `@liveblocks/client`; added `aiChatFeed: new LiveList([])` to `initialStorage` in `RoomProvider`
+  - `components/editor/ai-sidebar.tsx` — imported `MessageSquare`, `useSelf`, `chatMessageSchema`, `ChatMessage`; added `chatInput`, `chatSendError`, `chatScrollRef` state; reads `aiChatFeed` from Storage via `useStorage` and validates each message with `chatMessageSchema.safeParse` before rendering; `sendChatMessage` mutation pushes new items to the `aiChatFeed` LiveList; auto-scrolls chat on new messages; added "Chat" tab (between AI Architect and Specs) with scrollable message list (sender name + timestamp above each bubble, own messages right-aligned with brand border, others left-aligned), small error banner on send failure, existing-style Textarea + Send button input
+
+- **Feature 24 — AI Presence State** (feature-specs/24-ai-presence-state.md)
+  - `types/tasks.ts` — new file; `aiStatusFeedSchema` (zod) with `text?: string`, `isActive: boolean`, `phase?: enum`; exported `AiStatusFeedPayload` type
+  - `liveblocks.config.ts` — added `import type { LiveObject }` and `aiStatusFeed: LiveObject<{text?, isActive, phase?}>` to the `Storage` declaration
+  - `components/editor/workspace-client.tsx` — imported `LiveObject` from `@liveblocks/client`; added `initialStorage={{ aiStatusFeed: new LiveObject({ isActive: false }) }}` to `RoomProvider`
+  - `components/editor/ai-sidebar.tsx` — added `useStorage` + `useMutation` from `@liveblocks/react`; reads `aiStatusFeed` from Storage, validates with `aiStatusFeedSchema.safeParse`; shows a `bg-ai/10` status bar below the header when `isActive`; `updateAiFeed` mutation writes `isActive`, `text`, and `phase` to the `LiveObject`; `useEventListener` now syncs broadcast events into the shared feed; `submitPrompt` writes `isActive: true` on start and `isActive: false` on error; `isInputDisabled` combines shared `isAiActive` with local `isSubmitting` — input, send button, and starter chips all disable for every participant
+  - `components/editor/canvas.tsx` — added `Loader2` import; `CanvasCursor` reads `thinking` from `useOther(connectionId, o => o.presence.thinking)`; spinner rendered inside badge when `thinking === true`
+  - `app/globals.css` — added `display: flex; align-items: center; gap: 4px` to `.canvas-cursor-badge` for spinner + name layout
+
+- **Feature 23 — Design Agent Logic** (feature-specs/23-design-agent-logic.md)
+  - `liveblocks.config.ts` — added `RoomEvent` union type: `{ type: "AI_STATUS"; message: string; phase: "start" | "thinking" | "applying" | "done" | "error" }`
+  - `components/editor/workspace-client.tsx` — lifted `LiveblocksProvider` and `RoomProvider` from `canvas-wrapper.tsx` to here so both `Canvas` and `AiSidebar` share the same room context; passes `projectId` to `AiSidebar`
+  - `components/editor/canvas-wrapper.tsx` — removed `LiveblocksProvider` and `RoomProvider` (now provided by parent); retains `CanvasErrorBoundary` and `ClientSideSuspense`
+  - `trigger/design-agent.ts` — full AI design task: (1) sets AI presence with `thinking: true` + cursor via `liveblocks.setPresence`; (2) broadcasts `AI_STATUS` events at key steps (thinking → applying → done/error) via `liveblocks.broadcastEvent`; (3) reads current canvas state via `liveblocks.getStorageDocument` for Gemini context; (4) generates structured design with `generateObject` using `gemini-2.0-flash` via `@ai-sdk/google`; (5) applies all actions (add/move/resize/update/delete node, add/delete edge) to the shared Liveblocks storage via `liveblocks.mutateStorage` using `LiveObject`/`LiveMap`; nodes use `NODE_COLORS` palette and `SHAPE_SIZES`; dangling edges cleaned on node delete; (6) clears AI presence with TTL 2 s in `finally` block
+  - `components/editor/ai-sidebar.tsx` — wired to actual design API: `useEventListener` receives `AI_STATUS` broadcasts and updates the in-flight assistant message; on send calls `POST /api/ai/design`; shows `Loader2`/`CheckCircle2`/`AlertCircle` phase icons on assistant messages; input and chips disabled while submitting; starter chips submit directly without echoing to input
+
+- **Feature 22 — Design Agent API** (feature-specs/22-design-agent-api.md)
+  - `prisma/models/task-run.prisma` — `TaskRun` model with `runId` (unique), `projectId`, `userId`, `createdAt`; index on `runId`; compound index on `userId` + `projectId`; migration applied and client regenerated
+  - `trigger/design-agent.ts` — minimal `design-agent` task; accepts `{ prompt, roomId }` payload; logs input via `logger.info`; returns payload; no AI logic
+  - `app/api/ai/design/route.ts` — `POST`; requires Clerk auth; validates `prompt`, `roomId`, `projectId`; checks owner-or-collaborator access via `getProjectWithAccess`; triggers `design-agent` task via `tasks.trigger`; creates `TaskRun` record in Prisma; returns `{ runId }`
+  - `app/api/ai/design/token/route.ts` — `POST`; requires Clerk auth; validates `runId`; looks up `TaskRun` and verifies `userId` ownership; calls `auth.createPublicToken` scoped to that run with 1h expiry; returns `{ token }`
 
 ## Completed
 
@@ -162,7 +211,7 @@ change.
 
 ## Next Up
 
-- Feature 22 (check context/feature-specs/ for the next spec file)
+- Feature 25 (check context/feature-specs/ for the next spec file)
 
 ## Open Questions
 

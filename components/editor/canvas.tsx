@@ -24,7 +24,7 @@ import type { CanvasNode, CanvasEdge, ShapeDragPayload } from "@/types/canvas";
 import { DEFAULT_NODE_COLOR, DEFAULT_NODE_TEXT_COLOR } from "@/types/canvas";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useCanvasAutosave, type SaveStatus } from "@/hooks/useCanvasAutosave";
-import { Minus, Plus, Maximize2, Undo2, Redo2 } from "lucide-react";
+import { Minus, Plus, Maximize2, Undo2, Redo2, Loader2 } from "lucide-react";
 import "@xyflow/react/dist/style.css";
 import "@liveblocks/react-ui/styles.css";
 import "@liveblocks/react-flow/styles.css";
@@ -37,6 +37,7 @@ let nodeCounter = 0;
 
 function CanvasCursor({ connectionId }: { connectionId: number; userId: string }) {
   const info = useOther(connectionId, (o) => o.info);
+  const thinking = useOther(connectionId, (o) => o.presence.thinking);
   if (!info) return null;
   const badgeStyle = { "--cursor-bg": info.color } as React.CSSProperties;
   return (
@@ -56,6 +57,7 @@ function CanvasCursor({ connectionId }: { connectionId: number; userId: string }
         />
       </svg>
       <div className="canvas-cursor-badge" style={badgeStyle}>
+        {thinking && <Loader2 className="h-2.5 w-2.5 animate-spin" />}
         {info.name}
       </div>
     </div>

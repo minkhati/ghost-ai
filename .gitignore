@@ -47,3 +47,6 @@ next-env.d.ts
 .trigger/dev.lock
 .trigger/watchdog.pid
 .trigger/active-runs.json
+
+# clerk configuration (can include secrets)
+/.clerk/
